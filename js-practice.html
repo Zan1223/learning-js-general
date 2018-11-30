@@ -1,0 +1,747 @@
+<body>
+  <html>
+
+  <!-- <frameset cols="50% 50%">
+            <frame src="red.htm" name="redFrame">
+            <frame src="blue.htm" name="blueFrame">      
+    </frameset> -->
+
+
+
+
+
+  <script>
+    // 1. Write a JavaScript program to display the current day and time in the following format.  Go to the editor
+    // Sample Output : Today is : Tuesday.
+    // Current time is : 10 PM : 30 : 38
+
+    let day = new Date();
+    let today = day.getDay();
+    let dayOfWeek = '';
+    let hh = day.getHours();
+    let mm = day.getMinutes();
+    let ss = day.getSeconds();
+    function updateHour(hh) {
+      if (hh >= 12) return (hh - 12 + 'PM');
+      else return (hh + 'AM');
+
+    }
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednsday', 'Thursday', 'Friday', 'Saturday'];
+
+    console.log(`today is: ${days[today]} | current time is: ${updateHour(hh)}:${mm}:${mm}`);
+  </script>
+
+
+  <div id="test123"><span id="count" class="number test-number">10</span>秒后回到主页<span onclick="goBack()"></span> go back</span></div>
+  <button onclick="updateHost()">Update host</button>
+  <div id="nodeText"></div>
+
+
+  <script type="text/javascript">
+    var countNum = document.getElementById("count").innerHTML;
+    //获取显示秒数的元素，通过定时器来更改秒数。
+    function countNumber() {
+      document.getElementById("count").innerHTML = countNum;
+      countNum -= 1;
+      if (countNum < 0) {
+        window.location.href = "https://www.servicenow.com"
+      }
+      setTimeout(countNumber, 1000);
+    };
+    //countNumber();
+
+    function goBack() {
+      window.history.go(-1);
+    }
+
+
+   //通过window的location和history对象来控制网页的跳转。
+
+  </script>
+
+  <p id="intro">我的课程</p>
+  <ul>
+    <li title="JS">JavaScript</li>
+    <li title="JQ">JQuery</li>
+    <li title="">HTML/CSS</li>
+    <li title="JAVA">JAVA</li>
+    <li title="">PHP</li>
+  </ul>
+  <h1>以下为li列表title的值,当title为空时，新设置值为"WEB前端技术":</h1>
+  <script type="text/javascript">
+    const Lists = document.getElementsByTagName("li");
+    //console.log("Lists", Lists);
+    for (var i = 0; i < Lists.length; i++) {
+      var text = Lists[i].getAttribute("title");
+      if (text == "" || text == null) {
+        Lists[i].setAttribute("title", "web FE tech");
+      }
+      //document.write(text +"<br>");
+
+    }
+
+  </script>
+
+
+  <ul id="con">
+    <li id="lesson1">javascript
+      <ul>
+        <li id="tcon"> 基础语法</li>
+        <li>流程控制语句</li>
+        <li>函数</li>
+        <li>事件</li>
+        <li>DOM</li>
+      </ul>
+    </li>
+    <li id="lesson2">das</li>
+    <li id="lesson3">dadf</li>
+    <li id="lesson4">HTML/CSS
+      <ul>
+        <li>文字</li>
+        <li>段落</li>
+        <li>表单</li>
+        <li>表格</li>
+      </ul>
+    </li>
+  </ul>
+  <script type="text/javascript">
+    // var mylist = document.getElementById("tcon");
+    // var parents = mylist.parentNode.parentNode.parentNode;
+
+    // var htmlNode = parents.lastChild;
+    // console.log("htmlNode", htmlNode.ChildNodes.length);
+    // for(var i=0; i<htmlNode.length; i++){
+    //  console.log(htmlNode[i].nodeName + "<br>");
+    // }
+    var mylist = document.getElementById("tcon");
+    var cont = mylist.parentNode.parentNode.parentNode.lastChild;
+   //console.log(cont.innerHTML)
+  </script>
+
+
+  <div id="content">
+    <h1>html</h1>
+    <h1>php</h1>
+    <h1>javascript</h1>
+    <h1>jquery</h1>
+    <h1>java</h1>
+  </div>
+
+  <script type="text/javascript">
+    // function clearText() {
+    //   var content=document.getElementById("content");
+    //   var childnodes = content.childNodes;
+    //   for(var i=0; i < childnodes.length; i++){
+    //     if(childnodes[i].nodeType == 1){
+    //       console.log(childnodes[i]);
+    //       content.removeChild(childnodes[i]);
+    //     }
+    //   }
+    // }
+
+    function clearText() {
+      var content = document.getElementById("content");
+      // 在此完成该函数
+      while (content.childNodes[0]) {
+        content.removeChild(content.childNodes[0]);
+      }
+    }
+
+
+    clearText()
+  </script>
+
+  <div><b id="oldnode">JavaScript</b>是一个很常用的技术，为网页添加动态效果。</div>
+  <a href="javascript:replaceMessage()"> 将加粗改为斜体</a><br>
+
+  <script type="text/javascript">
+    function replaceMessage() {
+      var oldNode = document.getElementById("oldnode");
+      var oldNodeText = oldNode.innerHTML;
+      console.log(oldNode.nodeValue);
+      var newNode = document.createElement("i");
+      newNode.innerHTML = oldNodeText;
+      oldNode.parentNode.replaceChild(newNode, oldNode);
+
+    }
+
+    var greetings = "Hello Zan";
+  </script>
+
+
+  <script type="text/javascript">
+
+    console.log(window.innerHeight);
+    console.log(window.screen.height);
+    console.log(window.screen.width);
+
+    function print(consoleLog) {
+      console.log(consoleLog);
+    }
+
+    //create a function for comparision
+
+    function compareObj(propertyName) {
+      return function (a, b) {
+        var aPro = a[propertyName];
+        var bPro = b[propertyName];
+        if (aPro > bPro) {
+          return 1;
+        } else if (aPro < bPro) {
+          return -1;
+        } else {
+          return 0;
+        }
+      }
+    }
+
+    data = [{ name: "Zan", age: 30 }, { name: "David", age: 31 }]
+
+    console.log(data.sort(compareObj("age")));
+
+    function login(greetingMessage, userName) {
+      return greetingMessage(userName);
+    }
+
+    function greeting(name) {
+      return "Hello " + name;
+    }
+
+    console.log(login(greeting, "Ryan"));
+    var count = 0
+    function factorial(num) {
+      if (num <= 1) {
+        return 1;
+      }
+      else {
+        return num * arguments.callee(num - 1);
+      }
+    };
+
+    print(factorial(5) + " | " + count);
+
+
+    function sayColor() {
+      return this.color;
+    }
+
+    window.color = "purple";
+    var o = { color: "blue" };
+    o.sayColor = sayColor;
+    print(o.sayColor());
+    print(sayColor.call(this));
+
+    function sum(num) {
+      return num.reduce(function (a, b) {
+        return a + b;
+      });
+    }
+    var arrNum = [10, 1, 2, 3, 4];
+
+    print(sum);
+    print(sum(arrNum));
+
+    print(sum.valueOf());
+
+
+    var queryJson = {
+      "hits": [{
+        "path": "/content/servicenow/www/locale-sites/fr-fr/company/executive-team",
+        "excerpt": "ServiceNow : spécialiste du cloud pour les entreprises. Apprenez-en plus sur ServiceNow et découvrez notre équipe de direction.",
+        "name": "executive-team",
+        "title": "Équipe de direction de ServiceNow | ServiceNow",
+        "lastModified": "2018-06-08 13:01:59",
+        "created": "2018-02-01 11:25:50"
+      }, {
+        "path": "/content/servicenow/www/locale-sites/de-de/workflow-test-page2",
+        "excerpt": "",
+        "name": "workflow-test-page2",
+        "title": "Workflow-test-page2",
+        "lastModified": "2018-06-29 17:03:26",
+        "created": "2018-07-14 02:54:48"
+      }]
+    }
+    function reorders(propertyName) {
+      return function (a, b) {
+        var aProperty = a[propertyName];
+        var bProperty = b[propertyName];
+        if (aProperty < bProperty) {
+          return -1;
+        } else if (aProperty > bProperty) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+    }
+    queryJson.hits.sort(reorders('path'));
+
+    queryJson.hits.forEach(function (e) {
+      // document.write("https://aem-author-prod.servicenow.com/editor.html" + e.path + ".html" + "<br>");
+    })
+
+    function redColor(color) {
+      return color;
+    }
+    function readColor(someFunction, color) {
+      return someFunction(color);
+    }
+
+    print(readColor(redColor, "red"));
+
+
+    var getNum;
+
+    function orgNum() {
+      var n = 4;
+      // console.log("run outside")
+      var innerFunction = function () {
+        // console.log("run inside");
+        return n++;
+      }
+      // var hello = function(){
+      //   console.log("run this as well");
+      // }
+      return innerFunction;
+    }
+
+    getNum = orgNum();
+
+    print(getNum());
+    //print(getNum());
+
+    var num = 5367;
+    var numFixed = num.toExponential(2);
+    print(numFixed);
+
+    function sample1() {
+      return (function () {
+        //console.log('this is a test');
+        return ("hello world");
+      });
+    }
+
+    print(sample1());
+
+    var fruits = "apple banana pear";
+
+    String.prototype.getIndexOf = function (str) {
+      var position = [];
+      var positionOf = this.indexOf(str);
+      // while(positionOf > -1){
+      //   position.push(positionOf);
+      //   positionOf = this.indexOf(str, positionOf + 1);
+      //   print(positionOf);
+      // }
+      var count = 0;
+      for (var i = positionOf; i < this.length; i++) {
+        count++;
+        if (this[i] == str) {
+          position.push(this.indexOf(this[i], i));
+        }
+      }
+      print(count);
+      return position;
+    }
+    print(fruits.getIndexOf("b"));
+
+    var string1 = "apple apple apple apple";
+    var string2 = string1.replace(/(apple)/g, "I love ($1)");
+    print(string2);
+
+    var letters = "abcdefghijklmnopqrstuvwxyz";
+
+    for (var i = 0; i < letters.length; i++) {
+      //print(letters.charCodeAt(i));
+    }
+
+    /////////////////////////////////
+
+    var person = {
+      name: "Zan",
+      age: 24
+    }
+
+    Object.defineProperty(person, "name", {
+      writable: false
+    })
+
+    person.name = "David";
+
+    print(person.name);
+
+    ////////////////////////////////
+
+    var experience = {
+      _age: 30,
+      salary: 170000
+    }
+
+    //getter and setter
+
+    Object.defineProperty(experience, "ageSalaryComb", {
+      get: function () {
+        return this._age;
+      },
+      set: function (newValue) {
+        if (newValue > this._age) {
+          this.salary += (newValue - this._age) * 1000;
+        }
+      }
+    })
+
+
+    print(experience.salary);
+    //delete experience.salary;
+
+    experience.ageSalaryComb = 33;
+    print(experience.salary);
+    print(Object.getOwnPropertyDescriptor(experience, "ageSalaryComb"));
+
+    //Object.defineProperty(o: Object, p: string, attrs: any)
+
+
+    /////////////////////////////
+
+    function Person() { };
+    Person.prototype.name = "Zan";
+    Person.prototype.age = 30;
+
+    var personNew = new Person();
+    personNew.age = "32"
+    personNew.hasOwnProperty("age") //true
+    print(personNew.age);
+
+
+    /////////////////////////////
+    Object.prototype.repeat ? Object.prototype.repeat : Object.prototype.repeat = function (count) {
+      var i = "";
+      var j = 0;
+      while (j < count) {
+        i += this.name;
+        j++;
+      }
+      return i;
+    }
+
+    var greeting = { name: "Zan" };
+
+    print(greeting.repeat(3));
+
+    /////////////////////////////
+
+    function Car() { };
+    Car.prototype.color = ["white", "Yellow"];
+    Car.prototype.make = "BMW";
+
+    var myCar = new Car();
+    print(myCar.color);
+    myCar.color.push("Purple");
+    print(myCar.color);
+    print(Car.prototype);
+
+    print(myCar.constructor);
+
+    function Classroom() {
+      var students = new Array();
+      var i = 0;
+      while (i < arguments.length) {
+        students[i] = arguments[i];
+        i++
+      }
+      //students.push.apply(students,arguments);
+      students.toPipeString = function () {
+        return this.join("|");
+      }
+      return students;
+    }
+
+    var classRoom = new Classroom("Hugo", "David");
+    print(classRoom.toPipeString());
+    /////////////////////////////
+
+    var arr1 = new Array("loo", "fdsafda", "fdafd");
+    print(arr1 instanceof Object);
+
+
+    ////////////////////////////
+
+    function SuperType() { };
+
+    SuperType.prototype.property = "yes";
+
+    var testSuperType = new SuperType();
+    print(testSuperType.property);
+    print(SuperType.prototype.hasOwnProperty("constructor"));
+    print(SuperType.prototype.isPrototypeOf(testSuperType));
+
+    ///////////////////////////
+
+    function ConstructorF() {
+
+    }
+
+    function colorRender(color) {
+      return this.color = color;
+    }
+
+    function testRender(color) {
+      this.color = color;
+      this.name = name;
+      this.salary = "10k";
+    }
+    //print(testRender.prototype.address);
+
+    //testRender.address.push("SF")
+    //print(testRender.address);
+    //console.log("having property?-->",testRender.hasOwnProperty("color"));
+
+    var test345 = new testRender();
+    testRender.prototype.address = ["SF"];
+    testRender.prototype.age = 10;
+
+    print(test345.salary)
+    //print(testRender.prototype.address);
+    print(test345.address);
+    test345.address = ["SF", "NY"];
+
+    print(testRender.prototype.address)
+    var test678 = test345;
+
+    print(testRender.prototype.age)
+
+    test345.age = 20;
+
+    print(testRender.prototype.age)
+
+    //print(test678.age);
+
+    function constructF() {
+
+    }
+    constructF.prototype.color = function (color) {
+      return colorRender.call(this, arguments[0]);
+    }
+
+    var colorPickor = new constructF();
+
+    console.log("test1 -->", ConstructorF.hasOwnProperty("prototype"));
+
+    console.log("test2 -->", colorPickor.color("baba"));
+
+
+    var person = { name: "Zan", age: 30 };
+
+    var anotherPerson = person;
+    print(anotherPerson);
+
+    var yetAnotherPerson = Object.create(person);
+    /////////////////////////////////
+    //prototype chain //////////
+    function PersonNew(name) {
+      this.name = name;
+    }
+    PersonNew.prototype.work = "coder";
+
+    function AnotherPersonNew() { }
+    AnotherPersonNew.prototype = new PersonNew("Jan");
+
+    var newPerson = new AnotherPersonNew();
+
+    //print(AnotherPersonNew.prototype);
+    newPerson.work = "manager";
+    print(newPerson.work);
+
+
+    /////////////////////////闭包///////
+
+
+    // function createFunctions(){
+    //   var result = new Array();
+    //   for(let i=0; i<10;i++){
+    //     result[i] = function(){
+    //       return i;
+    //     }
+    //   }
+    //   return result;
+    // }
+
+    function createFunctions() {
+      var result = new Array();
+      for (var i = 0; i < 10; i++) {
+        result[i] = function (num) {
+          return function () {
+            return num;
+          }
+        }(i)
+      }
+      return result;
+    }
+
+    print(createFunctions());
+
+    //////////////////////////
+
+    (function (name) { print(name) })("Zan");
+
+    var name1 = "The window";
+
+    var objectTest = {
+      name: "The objectTest",
+      getName: function () {
+        var that = this;
+        return (function () {
+          return that.name;
+        });
+      }
+    }
+
+    print(objectTest.getName()());
+
+
+
+    ///////////////////////
+
+    (function (num) {
+      var sum = 1;
+      for (var i = 1; i <= num; i++) {
+        sum = sum * i;
+      }
+      print(sum);
+    })(5);
+
+
+
+    //////////////////////
+
+    var runIt = (function () {
+      var app = new Object();
+      app.register = function () {
+        return this.name;
+      };
+      app.name = "Lily";
+      console.log("runIt runs")
+      return app;
+    })();
+    //runIt();
+
+    console.log(runIt.register());
+
+
+    /////////////////////
+    var changeColorTo = "Black";
+    console.log("changeColorTo 1", window.changeColorTo);
+
+    print(window.hasOwnProperty("changeColorTo"));
+    // Object.defineProperty(window, "changeColorTo", {
+    //   configurable: true
+    // })
+
+
+    delete window.changeColorTo;
+
+    console.log("changeColorTo 2", window.changeColorTo);
+
+    //window.screenLeft = 500;
+    print(window.screenTop);
+    //window.moveTo(100,100);
+    function resizeWindow() {
+      console.log("clicked");
+      window.open("http://www.google.com", "Google", "height=500,width=500,menubar=false");
+    }
+
+    function updateHost() {
+      window.location.hash = "#q=it";
+    }
+
+    var getNumber = (document.getElementById("count").classList);
+    console.log("getNumber", getNumber);
+
+    var getText = document.getElementById("test123").childNodes;
+
+    getText[1].splitText(3);
+    print(getText);
+
+    var getText1 = document.getElementById("nodeText");
+    var textNode = document.createTextNode("this is a dynamic node value");
+
+    getText1.appendChild(textNode);
+    print(getText1.childNodes)
+
+
+    function foo_1(result, callback_1, callback_2) {
+      console.log("foo1-->", result);
+      callback_1.call(this, result, callback_2)
+    }
+
+    function foo_2(result, callback_1) {
+      console.log("foo2 -->", result);
+      callback_1.call(this, result)
+    }
+
+    function foo_3(result) {
+      console.log("foo3 -->", result);
+    }
+
+    foo_1("from foo_1", foo_2, foo_3);
+
+
+  </script>
+
+  <input type="button" value="Hover me" id="mybtn">
+
+  <script>
+    // var handler = function (event) {
+    //   //alert("hello world");
+    //   alert(event.currentTarget.nodeName)
+    // }
+    // var inputEvent = document.getElementById("input-test");
+    //  inputEvent.onclick = function(){
+    //    alert("hello world");
+    //  }
+    //  inputEvent.onclick = function(){
+    //    alert(this.id);
+    //  }
+
+    // inputEvent.addEventListener("click", handler, false)
+    //  inputEvent.removeEventListener("click", handler, false)
+
+    var mybtn = document.getElementById("mybtn");
+    var handler = function (event) {
+      switch (event.type) {
+        case "click":
+        var event_phase;
+         switch(event.eventPhase){
+           case 1:
+           event_phase = "capturing";
+           break;
+           case 2:
+           event_phase = "executing";
+           break;
+           case 3:
+           event_phase = "bubbling";
+           break;
+
+         }
+          alert("you clicked on " + event.target.id + "\nevent phase is " + event_phase); //event.target here is actually referring to document.getElementById("mybtn") === this
+          alert(this.nodeName);
+          break;
+        case "mouseover":
+          event.target.value = "Click me";
+          break;
+        case "mouseout":
+          event.target.value = "Hover me";
+          break;
+      }
+    }
+
+    mybtn.onclick = handler;
+    mybtn.onmouseover = handler;
+    mybtn.onmouseout = handler;
+    //document.body.onclick = handler;
+
+  </script>
+
+  </html>
+
+</body>
