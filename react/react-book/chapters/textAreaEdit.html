@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>propTypes</title>
+  <meta charset="utf-8">
+</head>
+
+<body>
+  <div id="app">
+    <!-- my app renders here -->
+  </div>
+  <script src="react/build/react.js"></script>
+  <script src="react/build/react-dom.js"></script>
+  <script>
+    /* Text Area Example BEGIN */
+    var TextArea = React.createClass({
+      render: function () {
+        return React.DOM.textarea({
+          className: "text-area",
+          defaultValue: this.props.value,
+          onChange: this.props.textChange
+        }, null)
+      }
+    })
+
+    var TextCounter = React.createClass({
+      render: function () {
+        return React.DOM.span({
+            className: "text-counter"
+          },
+          this.props.text.length
+        )
+      }
+    })
+
+    var TextAreaCounter = React.createClass({
+      _log: function (methodName, argsTest) {
+        console.log(methodName, argsTest)
+      },
+      componentWillUpdate: function () {
+        this._log('componentWillUpdate', arguments);
+      },
+      componentDidUpdate: function () {
+        this._log('componentDidUpdate', this.state.text);
+      },
+      componentWillMount: function () {
+        this._log('componentWillMount', arguments);
+      },
+      componentDidMount: function () {
+        this._log('componentDidMount', ReactDOM.findDOMNode(this));
+      },
+      componentWillUnmount: function () {
+        this._log('componentWillUnmount', arguments);
+      },
+
+      _textChange: function (el) {
+        this.setState({
+          text: el.target.value
+        })
+      },
+      getInitialState: function () {
+        return {
+          text: this.props.defaultValue
+        }
+      },
+      render: function () {
+        return React.DOM.div(null,
+          React.createElement(TextArea, {
+            value: this.state.text,
+            textChange: this._textChange
+          }),
+          React.createElement(TextCounter, {
+            text: this.state.text
+          })
+        )
+      }
+    })
+
+    /* Text Area Example END */
+
+    var myTextAreaCounter = ReactDOM.render(
+      React.createElement(TextAreaCounter, {
+        defaultValue: "Hello World!"
+      }),
+      document.getElementById("app")
+    );
+  </script>
+</body>
+
+</html>
