@@ -1,6 +1,6 @@
-<body>
-  <html>
 
+  <html>
+    <body>
   <!-- <frameset cols="50% 50%">
             <frame src="red.htm" name="redFrame">
             <frame src="blue.htm" name="blueFrame">      
@@ -8,7 +8,7 @@
 
 
 
-
+<a href="https://www.google.com">go to Google</a>
 
   <script>
     // 1. Write a JavaScript program to display the current day and time in the following format.  Go to the editor
@@ -740,8 +740,13 @@
     mybtn.onmouseout = handler;
     //document.body.onclick = handler;
 
+  //  window.addEventListener("beforeunload", function(event){
+  //    event.returnValue = "leave this page";
+  //  })
+
+  window.addEventListener("scroll", function (event) {
+      console.log(event.target.body.scrollTop)
+    })
   </script>
-
-  </html>
-
 </body>
+  </html>
