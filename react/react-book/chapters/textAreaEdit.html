@@ -35,8 +35,8 @@
     })
 
     var TextAreaCounter = React.createClass({
-      _log: function (methodName, argsTest) {
-        console.log(methodName, argsTest)
+      _log: function (methodName, args) {
+        console.log(methodName, args)
       },
       componentWillUpdate: function () {
         this._log('componentWillUpdate', arguments);
