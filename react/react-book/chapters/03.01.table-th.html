@@ -24,6 +24,14 @@
                     // return React.DOM.th({key: idx}, title);
                   })
                 )
+              ),
+              React.DOM.tbody(null,
+                React.DOM.tr(null,
+                  this.props.headers.map(function(title, idx) {
+                    return React.DOM.th(null, title);
+                    // return React.DOM.th({key: idx}, title);
+                  })
+                )
               )
             )
           );
