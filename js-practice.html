@@ -32,10 +32,10 @@
   </script>
 
 
-  <div id="test123"><span id="count" class="number test-number">10</span>秒后回到主页<span onclick="goBack()"></span> go back</span></div>
+  <div id="test123" name="test123name" value="test123value" prev="test123prev"><span id="count" class="number test-number">10</span>秒后回到主页<span onclick="goBack()"></span> go back</span></div>
   <button onclick="updateHost()">Update host</button>
   <div id="nodeText"></div>
-
+  <input id="input-id">
 
   <script type="text/javascript">
     var countNum = document.getElementById("count").innerHTML;
@@ -747,6 +747,10 @@
   window.addEventListener("scroll", function (event) {
       console.log(event.target.body.scrollTop)
     })
+
+  document.getElementById("input-id").addEventListener("keypress", (event)=>{
+    console.log(event.key + ":" + event.which);
+  })  
   </script>
 </body>
   </html>
