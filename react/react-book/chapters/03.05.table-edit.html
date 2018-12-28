@@ -47,14 +47,14 @@
           this.setState({
             data: data,
             sortby: column,
-            descending: descending,
+            descending: descending
           });
         },
         
         _showEditor: function(e) {
           this.setState({edit: {
             row: parseInt(e.target.dataset.row, 10),
-            cell: e.target.cellIndex,
+            cell: e.target.cellIndex
           }});
         },
         
@@ -65,7 +65,7 @@
           data[this.state.edit.row][this.state.edit.cell] = input.value;
           this.setState({
             edit: null,
-            data: data,
+            data: data
           });
         },
         

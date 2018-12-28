@@ -68,6 +68,21 @@
     <li title="">PHP</li>
   </ul>
   <h1>以下为li列表title的值,当title为空时，新设置值为"WEB前端技术":</h1>
+
+ <form id="form-1">
+   <input type="text" placeholder="first name" readonly="true">
+   <input type="text" placeholder="last name" required>
+   <input type="email" placeholder="email" required>
+    <select name="state" style="width:100px">
+      <option value="ca">CA</option>
+      <option value="ny">NY</option>
+      <option value="nv">NV</option>
+      <option value="wa">WA</option>
+    </select>
+   <input type="submit" value="Submit Form">
+   <input type="reset" value="reset form">
+ </form>
+
   <script type="text/javascript">
     const Lists = document.getElementsByTagName("li");
     //console.log("Lists", Lists);
@@ -751,6 +766,14 @@
   document.getElementById("input-id").addEventListener("keypress", (event)=>{
     console.log(event.key + ":" + event.which);
   })  
+
+  var form1 = document.forms[0].elements[2];
+
+  form1.addEventListener("keyup",(event)=>{
+    //console.log(event.target.checkValidity());
+    //console.log(event.target.validity);
+  })
+
   </script>
 </body>
   </html>
