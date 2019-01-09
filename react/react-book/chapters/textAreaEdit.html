@@ -111,21 +111,39 @@
       ["She: A History of Adventure", "H. Rider Haggard", "English", "1887", "100 million"],
     ];
 
+    // var Search = React.createClass({
+    //   render: function(){
+    //       return React.DOM.button({
+    //         className: "toolbar",
+    //         value: "search",
+    //         onClick: this.props.search
+    //       }, "Search")
+    //   }
+    // })
+
     var Excel = React.createClass({
       displayName: 'Excel',
+      _preSearchData: null,
       getInitialState: function () {
         return {
           data: this.props.defaultValue,
           sortby: null,
           descending: false,
-          edit: null //{row: 0, cell: 0}
+          edit: null, //{row: 0, cell: 0},
+          search: false
         }
       },
+      // componentWillMount: function(){
+      //   console.log("props data", this.props.data)
+      //   this.setState({
+      //     data: this.props.data
+      //   })
+      // },
       _sort: function(event){
         let column = event.target.cellIndex;
         let data = this.state.data.slice();
         var descending = this.state.sortby === column && !this.state.descending;
-       // console.log("descending-->", descending);
+       // console.log("descending-->", data);
         data.sort((a,b)=>{
           return descending ? (a[column] < b[column] ? 1 : -1) : (a[column] > b[column] ? 1 : -1);
         });
@@ -155,7 +173,8 @@
           data: data
         })
       },
-      render: function () {
+      _renderTable: function () {
+       // console.log("render data", this.state.data);
         return (
           React.DOM.table(null,
               React.DOM.thead({
@@ -171,11 +190,12 @@
               )
             ),
             React.DOM.tbody({onDoubleClick: this._showEditor},
-              this.state.data.map(function(data, index){
+              this._renderSearch(),
+              this.state.data.map((data, index) => {
                 return React.DOM.tr({
                   key: index
                 },
-                data.map(function(subData, subIndex){
+                data.map((subData, subIndex) => {
                  var content = subData;
                  var edit = this.state.edit;
                  if(edit && edit.row === index && edit.cell === subIndex){
@@ -190,14 +210,108 @@
                   key: subIndex,
                   'data-row': index
                 }, content)
-              },this)
+              })
               );
-            },this)
+            })
             )
           )
         )
+      },
+      _toggleSearch: function(){
+        if(this.state.search){
+          this.setState({
+            data: this._preSearchData,
+            search: false
+          })
+          this._preSearchData = null;
+        }else{
+          this._preSearchData = this.state.data;
+          this.setState({
+            search: true
+          });
+        }
+      },
+      _search: function(event){
+          let value = event.target.value,
+              originalData = this._preSearchData.slice(),
+              index = event.target.dataset["idx"];
+              console.log("originalData", originalData);
+          let filteredData = originalData.filter((data) => {
+            if(value){
+              return new RegExp(value.toLowerCase()).test(data[index].toString().toLowerCase())
+            }else{
+              return originalData;
+            }
+          });
+          this.setState({
+            data: filteredData
+          })
+      },
+      _renderSearch: function(){
+        if(!this.state.search){
+          return;
+        }
+        return React.DOM.tr({onChange: this._search},
+          this.props.headers.map((_ignore, idx) => {
+            return React.DOM.td({key: idx},
+              React.DOM.input({
+                type:"text",
+                "data-idx": idx
+              })
+            ) 
+          })
+        )
+      },
+      _renderToolbar: function(){
+        return React.DOM.button({
+            className: "toolbar",
+            value: "search",
+            onClick: this._toggleSearch
+          }, (!this.state.search ? "Search" : "Done Search"))
+      },
+      //render both the button and table
+      render: function(){
+        return React.DOM.div(
+          {className: "table-container"},
+          this._renderToolbar(),
+          this._renderTable()
+        )
       }
     })
+
+    // var Table = React.createClass({
+    //   getInitialState: function () {
+    //     return {
+    //       isSearchActivated: false,
+    //       newData: this.props.defaultValue
+    //     }
+    //   },
+    //   _search: function(event){
+    //    let oldData = this.state.newData.slice();
+    //    console.log("oldData", oldData);
+    //    // oldData.unshift(["input","input","input","input","input"]);
+    //     this.setState({
+    //       isSearchActivated: true,
+    //       newData: oldData
+    //     })
+    //   },
+    //   render: function(){
+    //        console.log(this.state.isSearchActivated);
+    //        console.log("newData", this.state.newData);
+    //       return React.DOM.div(
+    //         {
+    //           className: "table-wrapper"
+    //         }, 
+    //         React.createElement(Search, {search: this._search}),
+    //         React.createElement(Excel, {
+    //           headers: this.props.headers,
+    //           defaultValue: this.state.newData,
+    //           isSearchActivated: this.state.isSearchActivated
+    //         })
+    //       )
+    //   }
+    // })
+
 
     // var SortBtn = React.createClass({
     //   displayName: 'SortBtn',
