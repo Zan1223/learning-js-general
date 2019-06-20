@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "webpack --mode development",
-    "prod": "webpack --mode production"
+    "prod": "webpack --mode production",
+    "dev:server": "webpack-dev-server --mode development"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +22,7 @@
     "webpack": "^4.32.2",
     "webpack-cli": "^3.3.2",
     "webpack-deep-scope-plugin": "^1.6.0",
+    "webpack-dev-server": "^3.6.0",
     "webpack-merge": "^4.2.1",
     "yargs-parser": "^13.1.0"
   },
