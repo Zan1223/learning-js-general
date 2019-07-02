@@ -1,0 +1,27 @@
+{
+  "name": "node_playground",
+  "version": "0.0.1",
+  "description": "Node playground",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./http.js"
+  },
+  "keywords": [
+    "test"
+  ],
+  "author": "zan1223",
+  "license": "MIT",
+  "dependencies": {
+    "moment": "^2.24.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.17.3",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react": "^7.13.0",
+    "express": "^4.17.1"
+  }
+}
