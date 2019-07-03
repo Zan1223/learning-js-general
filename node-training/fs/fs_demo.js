@@ -56,5 +56,4 @@ const callbackFn = (oldData, key, value) => {
     })
 }
 
-
 updateValue(filePath, 'k1', 'This is my world', callbackFn);
