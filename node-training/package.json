@@ -13,6 +13,7 @@
   "author": "zan1223",
   "license": "MIT",
   "dependencies": {
+    "koa": "^2.7.0",
     "moment": "^2.24.0"
   },
   "devDependencies": {

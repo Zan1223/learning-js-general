@@ -31,30 +31,46 @@ function options(email) {
 server.on('request', (request, response) => {
     const requestUrl = url.parse(request.url, true);
     const requestPath = requestUrl.pathname;
-    const requestQuery = requestUrl.query.email;
-    console.log('requestUrl==>', requestUrl);
-    // console.log('requestQuery===>', requestQuery.email)
-    switch (requestPath) {
-        case '/eloqua': {
-            // console.log('options===>', options(requestQuery));
-            const request = http.request(options(null), (response) => {
-                // response.setEncoding('utf8');
 
-                console.log(`STATUS: ${response.statusCode}`);
-                console.log(`HEADERS: ${JSON.stringify(response.headers)}`);
-                let str = ''
-                response.on('data', (data) => {
-                    if (data) {
-                        str += data.toString('utf-8');
-                    }
-                });
-                response.on('end', () => {
-                    fs.appendFile('./createFile.html', str, () => {})
-                    console.log('str ====>', str);
+    const {
+        method,
+        path,
+        headers
+    } = request;
+   // console.log('headers', headers);
+    switch (requestPath) {
+        //when the request URL includes the /eloqua path
+        case '/eloqua': {
+            const reqSent = http.request({
+                host: 'www.google.com',
+                method:'GET',
+                headers: {
+                    'Content-Type': 'text/html'
+                }
+            }, (resRec) => {
+                 let str = ''
+                resRec.on('data', (data) => {
+                   // console.log('data==>', data);
+                    str += data.toString('utf-8');
+                    //write data directly to the response.
+                    response.write(data);
+                })
+                resRec.on('end', () => {
+                    //response back with the data
+                    response.end(()=>{
+                        fs.appendFile('./createFile.html', str, () => {});
+                    });
                 })
             })
-            request.end();
-            response.end('call completed');
+            //request data sent
+            request.on('data', (data) => {
+                reqSent.write(data);
+            })
+            //request end
+            request.on('end', () => {
+                reqSent.end('call completed');
+            })
+            //response.end('call completed');
             break;
         }
         default:
