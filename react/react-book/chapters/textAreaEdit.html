@@ -98,17 +98,18 @@
 
     /* Table component creatation BEGIN*/
     var headers = [
-      "Book", "Author", "Language", "Published", "Sales"
+      "Book", "Author", "Language", "Published", "Sales", "random"
     ];
 
     var data = [
-      ["The Lord of the Rings", "J. R. R. Tolkien", "English", "1954–1955", "150 million"],
-      ["Le Petit Prince (The Little Prince)", "Antoine de Saint-Exupéry", "French", "1943", "140 million"],
-      ["Harry Potter and the Philosopher's Stone", "J. K. Rowling", "English", "1997", "107 million"],
-      ["And Then There Were None", "Agatha Christie", "English", "1939", "100 million"],
-      ["Dream of the Red Chamber", "Cao Xueqin", "Chinese", "1754–1791", "100 million"],
-      ["The Hobbit", "J. R. R. Tolkien", "English", "1937", "100 million"],
-      ["She: A History of Adventure", "H. Rider Haggard", "English", "1887", "100 million"],
+      ["The Lord of the Rings", "J. R. R. Tolkien", "English", "1954–1955", "150 million", "323"],
+      ["Le Petit Prince (The Little Prince)", "Antoine de Saint-Exupéry", "French", "1943", "140 million", "323"],
+      ["Harry Potter and the Philosopher's Stone", "J. K. Rowling", "English", "1997", "107 million", "323"],
+      ["And Then There Were None", "Agatha Christie", "English", "1939", "100 million", "323"],
+      ["Dream of the Red Chamber", "Cao Xueqin", "Chinese", "1754–1791", "100 million", "323"],
+      ["The Hobbit", "J. R. R. Tolkien", "English", "1937", "100 million", "323"],
+      ["She: A History of Adventure", "H. Rider Haggard", "English", "1887", "100 million", "5656"],
+      ["abc", "ds", "dsds", "3838", "100 million", "808080"]
     ];
 
     // var Search = React.createClass({
@@ -123,14 +124,16 @@
 
     var Excel = React.createClass({
       displayName: 'Excel',
-      _preSearchData: null,
+      _preSearchData: [],
       getInitialState: function () {
+        this._preSearchData = this.props.defaultValue;
         return {
           data: this.props.defaultValue,
           sortby: null,
           descending: false,
           edit: null, //{row: 0, cell: 0},
-          search: false
+          search: false,
+          queryString: new Array(this.props.defaultValue.length)
         }
       },
       // componentWillMount: function(){
@@ -173,8 +176,25 @@
           data: data
         })
       },
+
+      filterData: function() {
+        
+        return this._preSearchData.slice().filter(data => {
+          for(let i = 0; i < this.state.queryString.length; i++){
+            if(!this.state.queryString[i]) continue;
+
+            if(data[i].toLowerCase().indexOf(this.state.queryString[i].toLowerCase()) <= -1) return false;
+          }
+
+          return true;
+        })
+      },
+
       _renderTable: function () {
        // console.log("render data", this.state.data);
+
+        const _data = this.filterData();
+
         return (
           React.DOM.table(null,
               React.DOM.thead({
@@ -191,7 +211,7 @@
             ),
             React.DOM.tbody({onDoubleClick: this._showEditor},
               this._renderSearch(),
-              this.state.data.map((data, index) => {
+              _data.map((data, index) => {
                 return React.DOM.tr({
                   key: index
                 },
@@ -233,18 +253,29 @@
       },
       _search: function(event){
           let value = event.target.value,
-              originalData = this._preSearchData.slice(),
+              originalData = this.state.data.slice();
               index = event.target.dataset["idx"];
               console.log("originalData", originalData);
-          let filteredData = originalData.filter((data) => {
-            if(value){
-              return new RegExp(value.toLowerCase()).test(data[index].toString().toLowerCase())
-            }else{
-              return originalData;
-            }
-          });
+          // let filteredData = originalData.filter((data) => {
+          //   if(!value) return false;
+          //   else {
+          //     return data[index].toString().toLowerCase().indexOf(value) > -1;
+          //   } 
+          //   // if(value){
+          //   //   return new RegExp(value.toLowerCase()).test(data[index].toString().toLowerCase())
+          //   // }else{
+          //   //   return this._preSearchData.slice();
+          //   // }
+          // });
+          // const result = this.state.searchResult.slice();
+          // result[index] = filteredData;
+
+          // let _data = originalDatal;
+          const _qr = this.state.queryString;
+          _qr[index] = value;
           this.setState({
-            data: filteredData
+            queryString: _qr,
+            //data: filteredData
           })
       },
       _renderSearch: function(){

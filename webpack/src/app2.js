@@ -1,0 +1,1 @@
+console.log('Hello this world from app2.js');
