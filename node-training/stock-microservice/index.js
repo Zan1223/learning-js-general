@@ -1,14 +1,19 @@
 const http = require('https');
 const url = require('url');
+const fs = require('fs');
 
+const options = {
+    key: fs.readFileSync('./server.key'), //this needs to be updated once running on remote server
+    cert: fs.readFileSync('./server.crt'), //this needs to be updated once running on remote server
+}
+//console.log('options.key===>', options.key)
 //create a server 
-const server = http.createServer();
+const server = http.createServer(options);
 const STOCK_API = 'https://clientapi.gcs-web.com/data/7b99bfb2-ab5a-428d-b1dd-d8120d6c3fda';
+//const STOCK_API = 'http://www.pacwest-usa.com/js/lhtpM.js';
 
 function httpRequest(url, request, response){
-    const reqSent = http.request(url,{
-        method:'GET',
-    }, (resRec) => {
+    const reqSent = http.get(url, options, (resRec) => {
          let str = ''
         resRec.on('data', (data) => {
             str += data.toString('utf-8');
@@ -43,7 +48,7 @@ server.on('request', (request, response) => {
             break;
         }
         case '/bin/stock-lookup': {
-            // historical info
+            // historical info lookup
             //httpRequest.call(this, `${STOCK_API}/quotes`, request, response);
             break;
         }

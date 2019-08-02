@@ -1,6 +1,9 @@
 const promise = new Promise((resolve, reject)=>{
 console.log(1);
-    resolve(12345);
+  setTimeout(()=>{
+    console.log('setTimeout ===>')
+  },1000)
+  resolve(12345);
 }).then((r)=>{
     console.log('first r',r);
 }).then((r)=>{
@@ -12,7 +15,7 @@ console.log(1);
     })
 }).then((r)=>{
     console.log('5');
-    console.log(r);
+    console.log('rrrr==>', r);
 });
 
 console.log(2)

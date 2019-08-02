@@ -42,9 +42,18 @@ app.use(async (ctx, next) => {
     // }
 
     // Attachment
-    ctx.response.attachment('koa_demo');
-    ctx.response.body = fs.createReadStream('./index.html');
+   // ctx.response.attachment('koa_demo');
+    // ctx.response.body = fs.createReadStream('./index.html');
 
+    const rs = fs.createReadStream('./index.html');
+    let str=''
+    rs.on('data', (res)=>{
+        str+= res.toString();
+    })
+    rs.on('end',()=>{
+        console.log(str);
+        ctx.response.body = str;
+    })
 
 })
 

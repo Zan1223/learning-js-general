@@ -1,6 +1,6 @@
 const Router = require('koa-router');
 const routers = new Router();
-const db = require('../services/db_service');
+const db = require('../models/posts');
 
 routers.get('/post', async (ctx, next) => {
     const content = await db.getData();

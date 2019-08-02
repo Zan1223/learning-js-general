@@ -41,18 +41,15 @@ server.on('request', (request, response) => {
     switch (requestPath) {
         //when the request URL includes the /eloqua path
         case '/eloqua': {
-            const reqSent = http.request({
-                host: 'www.google.com',
+            const reqSent = http.request('http://www.pacwest-usa.com/bootstrap/js/bootstrap.min.js',{
                 method:'GET',
-                headers: {
-                    'Content-Type': 'text/html'
-                }
             }, (resRec) => {
                  let str = ''
                 resRec.on('data', (data) => {
                    // console.log('data==>', data);
                     str += data.toString('utf-8');
                     //write data directly to the response.
+                    console.log(data);
                     response.write(data);
                 })
                 resRec.on('end', () => {

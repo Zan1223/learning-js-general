@@ -20,3 +20,12 @@
 2019-07-23 10:58:44.545 PDT [92480] STATEMENT:  ls
 	SELECT * FROM posts
 	;
+2019-07-30 08:49:08.479 PDT [92086] LOG:  received smart shutdown request
+2019-07-30 08:49:08.482 PDT [92086] LOG:  background worker "logical replication launcher" (PID 92093) exited with exit code 1
+2019-07-30 08:49:08.482 PDT [92088] LOG:  shutting down
+2019-07-30 08:49:08.493 PDT [92086] LOG:  database system is shut down
+2019-07-31 09:09:06.760 PDT [67797] LOG:  listening on IPv6 address "::1", port 5432
+2019-07-31 09:09:06.760 PDT [67797] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2019-07-31 09:09:06.761 PDT [67797] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2019-07-31 09:09:06.780 PDT [67798] LOG:  database system was shut down at 2019-07-30 08:49:08 PDT
+2019-07-31 09:09:06.788 PDT [67797] LOG:  database system is ready to accept connections

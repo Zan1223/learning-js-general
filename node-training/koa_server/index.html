@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+    <h1>api test page</h1>
+    <div id="json-print"></div>
+    <script>
+        // fetch('http://localhost:8088/post', {
+        //         method: 'GET',
+        //         mode: 'no-cors',
+        //         credentials: 'omit',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //     })
+        //     .then((response) => {
+        //         console.log(response.json());
+        //     })
+        //     .then((data) => {document.getElementById('json-print').innerHTML = data})
+        //     .catch(error => {});
+
+        //     $.ajax({
+        //   url: 'https://clientapi.gcs-web.com/data/7b99bfb2-ab5a-428d-b1dd-d8120d6c3fda/quotes',
+        //   type: 'GET',
+        //   crossDomain: true,
+        //   type: 'json',
+        //   headers: {  'Access-Control-Allow-Origin': '*' },
+        //   success(result) {
+        //     console.log(JSON.stringify(result));
+        //   },
+        //   error(err) {
+        //     console.log('Error updating contextHub servlet data.');
+        //   }
+        // });
+
+        fetch('https://clientapi.gcs-web.com/data/7b99bfb2-ab5a-428d-b1dd-d8120d6c3fda/quotes', {
+                mode: 'no-cors',
+            })
+            .then(
+                function (response) {
+                    if (response.status !== 200) {
+                        console.log('Looks like there was a problem. Status Code: ' +
+                            response.status);
+                        return;
+                    }
+
+                    // Examine the text in the response
+                    response.json().then(function (data) {
+                        console.log(JSON.stringify(data));
+                    });
+                }
+            )
+            .catch(function (err) {
+                console.log('Fetch Error :-S', err);
+            });
+    </script>
+</body>
+
+</html>
