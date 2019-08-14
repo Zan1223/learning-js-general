@@ -10,7 +10,7 @@ const options = {
 //create a server 
 const server = http.createServer(options);
 const STOCK_API = 'https://clientapi.gcs-web.com/data/7b99bfb2-ab5a-428d-b1dd-d8120d6c3fda';
-//const STOCK_API = 'http://www.pacwest-usa.com/js/lhtpM.js';
+
 
 function httpRequest(url, options, request, response){
     const reqSent = http.get(url, options, (resRec) => {
@@ -25,6 +25,10 @@ function httpRequest(url, options, request, response){
             response.end();
         })
     })
+    response.setHeader('Content-Type','text/json');
+    response.setHeader('X-Content-Type-Options','nosniff');
+    response.setHeader('Content-Encoding','gzip');
+    response.setHeader('Access-Control-Allow-Origin','*');
     //request data sent
     request.on('data', (data) => {
         reqSent.write(data);
@@ -43,8 +47,17 @@ server.on('request', (request, response) => {
 
     switch (requestPath) {
         //when the request URL includes the /eloqua path
+        case '/': {
+            // current stock info
+            response.setHeader('Content-Type','text/html');
+            response.setHeader('Access-Control-Allow-Origin','*');
+            const rs = fs.createReadStream('./test.html');
+            rs.pipe(response);
+            break;
+        }
         case '/bin/stock-current': {
             // current stock info
+            // response.setHeader('X-Content-Type-Options','nosniff');
             httpRequest.call(this, `${STOCK_API}/quotes`, options, request, response);
             break;
         }
@@ -52,19 +65,19 @@ server.on('request', (request, response) => {
             const date = requestUrl.query.date;
             console.log(date);
             // historical info lookup
-            // httpRequest.call(this, `${STOCK_API}/quotes/lookup?date=${date}&symbol=NOW`, request, response);
-            httpRequest.call(this, `${STOCK_API}/quotes`, options, request, response);
+            httpRequest.call(this, `${STOCK_API}/quotes/lookup?date=${date}&symbol=NOW`, options, request, response);
+            //httpRequest.call(this, `${STOCK_API}/quotes`, options, request, response);
             break;
         }
         case '/bin/stock-weeklookup': {
             const date = requestUrl.query.date;
             // historical info lookup
-            httpRequest.call(this, `${STOCK_API}/quotes/lookup/weekof?date=${date}&symbol=NOW`, request, response);
+            httpRequest.call(this, `${STOCK_API}/quotes/lookup/weekof?date=${date}&symbol=NOW`, options, request, response);
             break;
         }
         case '/bin/stock-filing': {
             // filings
-            httpRequest.call(this, `${STOCK_API}/filings`, request, response);
+            httpRequest.call(this, `${STOCK_API}/filings`, options, request, response);
             break;
         }
         default:
