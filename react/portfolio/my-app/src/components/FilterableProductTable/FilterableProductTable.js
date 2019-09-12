@@ -28,7 +28,7 @@ class FilterableProductTable extends React.Component {
         }
         productRow = (product) =>{
             return (
-                <tr>
+                <tr key={product.name}>
                     <td className={`stocked-${product.stocked}`}>{product.name}</td>
                     <td>{product.price}</td>
                 </tr>
@@ -36,7 +36,7 @@ class FilterableProductTable extends React.Component {
         }
         productCategoryRow = (category) =>{
             return (
-                <tr>
+                <tr key={category}>
                     <th>
                         {category}
                     </th>
