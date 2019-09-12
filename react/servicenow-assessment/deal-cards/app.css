@@ -1,0 +1,42 @@
+.card {
+    padding: 10px;
+	border: solid 1px #808080;
+	background-color: white;
+	display: inline-block;
+	border-radius: 10px;
+	font-size: 14pt;
+	text-align: center;
+	color:black;
+	margin: 3px;
+}
+
+.card .cardSuit {
+	background-image: url('card.png');
+	height: 100px;
+	width: 90px;
+}
+
+.card .cardVal1 {
+	font-size:15pt;
+    font-family: sans-serif;
+    float: left;
+}
+.card .cardVal2 {
+	font-size:15pt;
+    font-family: sans-serif;
+    float: right;
+}
+
+.card .diamonds {
+	background-position-y: 105px;
+}
+
+.card .hearts {
+    background-position-x: 93px;
+    background-position-y: 5px;
+}
+
+.card .clubs {
+	background-position-x:90px;
+	background-position-y:100px;
+}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>test valid ip </title>
+    </head>
+    <body>
+        <script>
+
+        function validateAddress (ip) {
+            let isIpValid = false
+            let ipSplit = ip.split('.')
+            if (ipSplit.length === 4) {
+                for(let num in ipSplit) {
+                    if (!ipSplit[num]) return false
+                    let ipSplitNum = parseInt(ipSplit[num])	
+                    if (ipSplitNum >= 0 && ipSplitNum <= 255) {	
+                        isIpValid = true
+                    } 
+                    else { isIpValid = false }
+                }	
+            }
+            return isIpValid	
+        }
+
+
+        </script>
+    </body>
+</html>
