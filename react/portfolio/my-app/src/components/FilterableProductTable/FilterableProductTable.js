@@ -1,25 +1,26 @@
 import React from 'react';
 import './FilterableProductTable.css';
-// const PRODUCTS = [
-//     {category: "Sporting Goods", price: "$49.99", stocked: true, name: "Football"},
-//     {category: "Sporting Goods", price: "$9.99", stocked: true, name: "Baseball"},
-//     {category: "Sporting Goods", price: "$29.99", stocked: false, name: "Basketball"},
-//     {category: "Electronics", price: "$99.99", stocked: true, name: "iPod Touch"},
-//     {category: "Electronics", price: "$399.99", stocked: false, name: "iPhone 5"},
-//     {category: "Electronics", price: "$199.99", stocked: true, name: "Nexus 7"}
-//   ];
 
 class FilterableProductTable extends React.Component {
-        // constructor(props) {
-        //     super(props);
-        //     this.state = {jason: this.props.prodList}
-        // }
+        constructor(props) {
+            super(props);
+            this.state = {jason: this.props.prodList, onlyStocked: false, searchString: ''}
+        }
+        showOnlyStocked = (el) =>{
+            this.setState({onlyStocked: !this.state.onlyStocked});
+        }
+
+        searchProduct = (el) =>{
+            const searchTerm = el.target.value;
+            this.setState({searchString: searchTerm});
+        }
+
         searchBar = () =>{
             return (
                 <form>
-                    <input type="text" placeholder="Search..." />
+                    <input type="text" placeholder="Search..." onChange={this.searchProduct}/>
                     <p>
-                    <input type="checkbox" />
+                    <input type="checkbox" onChange={this.showOnlyStocked}/>
                     {' '/*fpr adding the space before text below*/}
                     Only show products in stock
                     </p>
@@ -46,15 +47,24 @@ class FilterableProductTable extends React.Component {
 
         productTable = (props) =>{
             const rows = [];
+            const fitlerTerm = this.state.searchString.toLowerCase();
+            const stockFlag = this.state.onlyStocked;
             let lastCategory = null;
             props.forEach((product)=>{
-                if(product.category !== lastCategory){
-                   rows.push(this.productCategoryRow(product.category));
+                if(stockFlag && !product.stocked){
+                    return;
                 }
+                if(product.name.toLowerCase().indexOf(fitlerTerm) === -1){
+                    return;
+                }
+                if(product.category !== lastCategory){
+                    rows.push(this.productCategoryRow(product.category));
+                 }
+
                 rows.push(this.productRow(product))
+
                 lastCategory = product.category;
             });
-            console.log('+++++ rows', rows);
             return(
                 <table>
                     <thead>
