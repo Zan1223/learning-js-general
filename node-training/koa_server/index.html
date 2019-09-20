@@ -43,7 +43,7 @@
         //   }
         // });
 
-        fetch('https://clientapi.gcs-web.com/data/7b99bfb2-ab5a-428d-b1dd-d8120d6c3fda/quotes', {
+        fetch('https://webapi.webdev.servicenow.com/stock/stock-current', {
                 mode: 'no-cors',
             })
             .then(
@@ -56,7 +56,7 @@
 
                     // Examine the text in the response
                     response.json().then(function (data) {
-                        console.log(JSON.stringify(data));
+                        console.log('json goes here====>', JSON.stringify(data));
                     });
                 }
             )
