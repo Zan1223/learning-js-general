@@ -25,7 +25,7 @@ function httpRequest(url, options, request, response){
             response.end();
         })
     })
-    response.setHeader('Content-Type','text/json');
+    response.setHeader('Content-Type','application/json');
     response.setHeader('X-Content-Type-Options','nosniff');
     response.setHeader('Content-Encoding','gzip');
     response.setHeader('Access-Control-Allow-Origin','*');

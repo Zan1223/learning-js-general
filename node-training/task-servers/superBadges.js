@@ -6,8 +6,8 @@ const server = http.createServer();
 server.on('request',(req,res)=>{
   res.setHeader('Content-Type','application/json');
   res.setHeader('Access-Control-Allow-Origin','*');
-   const reqStream = fs.createReadStream('./common.json');
+   const reqStream = fs.createReadStream('./superBadges.json');
    reqStream.pipe(res);
 })
 
-server.listen(8889,()=>{console.log('server on port: 8889')});
+server.listen(8888,()=>{console.log('server on port: 8888')});
