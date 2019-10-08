@@ -23,11 +23,6 @@ const ChessBoard = ()=>{
         [null, null, null],
         [null, null, null]
     ]);
-    const [emptyCells, setEmptyCells]= useState([
-        [null, null, null],
-        [null, null, null],
-        [null, null, null]
-    ]);
     const [n, setN] = useState(0);
     const [winner, setWinner] = useState('Winner');
     const [gameOver, setGameOver] = useState(false);
@@ -42,17 +37,13 @@ const ChessBoard = ()=>{
     }
     const reset = ()=>{
             setGameOver(false);
-            console.log('cells in reset ', cells);
-            console.log('emptyCells in reset before', emptyCells);
-            let copy = JSON.parse(JSON.stringify(emptyCells))
+            // reset the source data;
+            let copy = cells.map(items=>items.map(item=>item=null));
             setCells(copy);
             setN(0)
         }
     const tell = (cells)=>{
-        // if(cells[0][0] === cells[0][1] && cells[0][1] === cells[0][2] && cells[0][0] !== null){
-        //     console.log(cells[0][0]+' won the game!');
-        //     setGameOver(true)
-        // }
+
         for(let i=0; i<3; i++){
             if(cells[i][0] === cells[i][1] && cells[i][1] === cells[i][2] && cells[i][0] !== null){
                 console.log(cells[i][0]+' won the game! 1');
