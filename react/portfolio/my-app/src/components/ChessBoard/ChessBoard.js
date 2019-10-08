@@ -15,12 +15,6 @@ const BUTTON = (props) => {
     )
 }
 
-const TEST1 = () =>{
-    return (
-        <div>test123</div>
-    )
-}
-
 const CHESSBOARD = () => {
     const [cells, setCells] = useState([
         [null, null, null],
@@ -28,6 +22,7 @@ const CHESSBOARD = () => {
         [null, null, null]
     ]);
     const [n, setN] = useState(0);
+    const [history, setHistory] = useState([cells])
     const [winner, setWinner] = useState('Winner');
     const [gameOver, setGameOver] = useState(false);
     const onClickButton = (row, col) => {
@@ -35,6 +30,7 @@ const CHESSBOARD = () => {
         if (copy[row][col] === null) {
             copy[row][col] = n % 2 === 0 ? 'x' : 'o';
             setN(n + 1);
+            setHistory([...history, copy]);
             setCells(copy);
             tell(copy);
         }
@@ -44,7 +40,18 @@ const CHESSBOARD = () => {
         // reset the source data;
         let copy = cells.map(items => items.map(item => item = null));
         setCells(copy);
-        setN(0)
+        setN(0);
+        setHistory([copy]);
+    }
+    const revert = () => {
+        history.pop();
+        if (history.length < 1) {
+            setHistory([cells]);
+            return false;
+        }
+        const revertStep = history[history.length - 1];
+        setCells(revertStep);
+        setN(n - 1);
     }
     const tell = (cells) => {
 
@@ -75,17 +82,18 @@ const CHESSBOARD = () => {
     }
     return (
         <div>
-            <div>n:{n}</div>
+            <div>Step: {n}</div>
             <div className='chessBoard'>
                 {cells.map((items, row) => <div className='row'>
                     {items.map((item, col) => <CELL text={item} onClick={() => onClickButton(row, col)} />)}
                 </div>)}
             </div>
             {gameOver && <div className="gameOverOverlay"><div className='gameOverText'>Game Over</div>
-                <p className='winner'>{winner} wins the game!</p>
+                <p className='winner'>{winner.toUpperCase()} wins the game!</p>
                 <BUTTON label='Play again' onClick={() => reset()} />
             </div>}
             <BUTTON label='Reset' onClick={() => reset()} />
+            <BUTTON label='Revert' onClick={() => revert()} />
         </div>
     )
 }
