@@ -1,0 +1,19 @@
+.game-container {
+    padding: 40px;
+}
+
+.header{
+    display: flex;
+    justify-content: center;
+}
+.time{
+    padding: 20px;
+    text-align: center;
+}
+.time span{
+    display: block;
+}
+
+.track {
+    border-bottom: 1px solid black;
+}

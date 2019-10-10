@@ -3,7 +3,7 @@ import './ChessBoard.css';
 
 const CELL = (props) => {
     return (
-        <div className='cells' onClick={props.onClick}>
+        <div className='cells' onClick={props.onClick} key={props.uniqueKey}>
             {props.text}
         </div>
     )
@@ -84,19 +84,18 @@ const CHESSBOARD = () => {
         <div>
             <div>Step: {n}</div>
             <div className='chessBoard'>
-                {cells.map((items, row) => <div className='row'>
-                    {items.map((item, col) => <CELL text={item} onClick={() => onClickButton(row, col)} />)}
+                {cells.map((items, row) => <div className='row' key={row}>
+                    {items.map((item, col) => <CELL text={item} onClick={() => {onClickButton(row, col)}} uniqueKey={col} />)}
                 </div>)}
             </div>
             {gameOver && <div className="gameOverOverlay"><div className='gameOverText'>Game Over</div>
                 <p className='winner'>{winner.toUpperCase()} wins the game!</p>
-                <BUTTON label='Play again' onClick={() => reset()} />
+                <BUTTON label='Play again' onClick={() => {reset()}} />
             </div>}
-            <BUTTON label='Reset' onClick={() => reset()} />
-            <BUTTON label='Revert' onClick={() => revert()} />
+            <BUTTON label='Reset' onClick={() => {reset()}} />
+            <BUTTON label='Revert' onClick={() => {revert()}} />
         </div>
     )
 }
-
 
 export default CHESSBOARD;
