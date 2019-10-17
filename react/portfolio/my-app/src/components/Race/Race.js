@@ -19,10 +19,7 @@ function Race() {
                 <RabbitTime time={time1}/>
                 <TortioseTime time={time2}/>
             </div>
-            <div className="tracks">
-                <RabbitTrack success={success1} />
-                <TortioseTrack success={success2} />
-            </div>
+            <Playground successRabbit={success1} successTortiose={success2}/>
         </div>
     )
 }
@@ -41,6 +38,15 @@ function TortioseTime(props) {
         <div className='tortiose-time time'>
             🐢 Total time
             <span>{props.time}</span>
+        </div>
+    )
+}
+
+function Playground(props){
+    return(
+        <div className="tracks">
+            <RabbitTrack success={props.successRabbit}/>
+            <TortioseTrack success={props.successTortiose}/>
         </div>
     )
 }
