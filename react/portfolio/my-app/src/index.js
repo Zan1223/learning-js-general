@@ -1,78 +1,82 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import styled, {keyframes} from 'styled-components';
 
-function Button(props){
-    const [btnState, setBtnState] = useState(false);
-    const [clickPosition, setPosition] = useState({left: 0, top: 0})
-    const btnRef = React.createRef();
-    const btnAnimation = keyframes`
-        0% {transform: scale(0.7); transform-origin: center;}
-        100% {transform:scale(25);transform-origin: center;}
-    `; 
+const initData = [{ checkbox1: { text: 'CheckBox 1', checked: false } }, { checkbox2: { text: 'CheckBox 2', checked: false } }, { checkbox3: { text: 'CheckBox 3', checked: false } }, { checkbox4: { text: 'CheckBox 4', checked: false } }];
 
+function CheckBox(props) {
+	return (
+		<div>
+			<label>
+				<input type='checkbox' value={props.value} checked={props.checked} onChange={props.statusChange} dataindex={props.index} />
+				{props.text}
+			</label>
+		</div>
+	)
+}
 
-    const Button = styled.button`
-        border: 1px solid #ddd;
-        color: black;
-        height: 50px;
-        width: 100px;
-        position: relative;
-        overflow: hidden;
-    `
-    const Text = styled.span`
-        z-index:1;
-        color: blue;
-        position: relative;
-    `
+function Button(props) {
+	return (
+		<button onClick={props.onClick}>{props.text}</button>
+	)
+}
 
-    const AnimateDrop = styled.span`
-        z-index: 0;
-        background: red;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        animation: 0.75s ${btnAnimation} forwards;
-        display: inline-block;
-        position: absolute;
-        left: ${clickPosition.left}px;
-        top: ${clickPosition.top}px;
-    `
-    const animate = (event)=>{
-       setBtnState(true);
-       let {x, y} = btnRef.current.getBoundingClientRect();
-       let {clientX, clientY} = event;
-       let left = clientX - x;
-       let top = clientY - y;
-       console.log(left,top);
-       setPosition({
-           left: left,
-           top: top
-       })
-    }
-
-    const removeBtnAnimation = ()=>{
-        setBtnState(false);
-    }
-
-    return (
-        <Button onClick={animate} ref={btnRef} onAnimationEnd={removeBtnAnimation}>
-            <Text>{props.value}</Text>
-            {btnState && <AnimateDrop />}
-        </Button>
-    )
-
+function Display(props){
+	const selected = props.data.filter((item, index)=>props.data[index][Object.keys(item)].checked)
+	//console.log('selected++++', selected);
+	return (
+		<div className="display">
+			<ul>
+			{selected.map((item,index)=><li key={index}>{selected[index][Object.keys(item)].text}</li>)}
+			</ul>
+		</div>
+	)
 }
 
 
-function App(){
-    return(
-        <div>
-            <Button value='Click here!'/>
-        </div>
-    )
+function CheckBoxContainer(props) {
+	const [data, setData] = useState(props.initCheckBox);
+//	const [cleared, setCleared] = useState(false);
+  const [showDisplay, setShowDisplay] = useState(false);
+	const save = () => {
+		console.log('saved data +++', data);
+		setShowDisplay(true);
+	}
+	const clear = (event) => {
+		// setData(initialData);
+		data.map((item,index)=>data[index][Object.keys(item)].checked = false);
+		// console.log(data);
+		setData(data.slice(0))
+	}
+	const cancel = () => {
+		// console.log('ffdafdafd');
+	}
 
+	const updateCheckBox = (event) => {
+		const index = event.target.getAttribute('dataindex');
+		const value = event.target.value;
+		data[index][value].checked = !data[index][value].checked;
+		setData(data.slice(0));
+	}
+
+	return (
+		<div>
+			{data.map((item, index) => <CheckBox 
+				value={Object.keys(item)} 
+				text={data[index][Object.keys(item)].text} 
+				checked={data[index][Object.keys(item)].checked} 
+				key={index} statusChange={updateCheckBox} 
+				index={index} />
+			)}
+			<Button text='Save' onClick={save} />
+			<Button text='Clear' onClick={clear} />
+			<Button text='Cancel' onClick={cancel} />
+			{showDisplay && <Display data={data}/>}
+		</div>
+	)
 }
 
 
-ReactDOM.render(<App />, document.getElementById('root'))
+
+
+
+ReactDOM.render(<CheckBoxContainer initCheckBox={initData} />, document.getElementById('root'));
