@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
-const initData = [{ checkbox1: { text: 'CheckBox 1', checked: false } }, { checkbox2: { text: 'CheckBox 2', checked: false } }, { checkbox3: { text: 'CheckBox 3', checked: false } }, { checkbox4: { text: 'CheckBox 4', checked: false } }];
-
 function CheckBox(props) {
 	return (
 		<div>
@@ -21,62 +19,80 @@ function Button(props) {
 }
 
 function Display(props){
-	const selected = props.data.filter((item, index)=>props.data[index][Object.keys(item)].checked)
+	const selected = props.data.filter((item, index)=>item.checked);
 	//console.log('selected++++', selected);
 	return (
 		<div className="display">
 			<ul>
-			{selected.map((item,index)=><li key={index}>{selected[index][Object.keys(item)].text}</li>)}
+			{selected.map((item,index)=><li key={index}>{item.text}</li>)}
 			</ul>
+			<Button text='edit' onClick={props.showEditSwitch}/>
 		</div>
 	)
 }
 
+function EditorySection(props){
+	return (
+		<div>
+			{props.data.map((item, index) => <CheckBox 
+				value={item.id} 
+				text={item.text} 
+				checked={item.checked} 
+				key={index} 
+				statusChange={props.updateCheckBox} 
+				index={index} />
+			)}
+			<Button text='Save' onClick={props.saveFn} />
+			<Button text='Clear' onClick={props.clearFn} />
+			<Button text='Cancel' onClick={props.cancelFn} />
+			{/*showDisplay && <Display data={data}/>*/}
+		</div>
+	)	
+}
 
-function CheckBoxContainer(props) {
-	const [data, setData] = useState(props.initCheckBox);
-//	const [cleared, setCleared] = useState(false);
-  const [showDisplay, setShowDisplay] = useState(false);
+
+function MultiSelectApp(props) {
+	const initData = [{ id:'checkbox1', text: 'CheckBox 1', checked: false  }, { id:'checkbox2', text: 'CheckBox 2', checked: false  }, { id:'checkbox3', text: 'CheckBox 3', checked: false  }];
+	let savedData = [{ id:'checkbox1', text: 'CheckBox 1', checked: false  }, { id:'checkbox2', text: 'CheckBox 2', checked: false  }, { id:'checkbox3', text: 'CheckBox 3', checked: false  }];
+	const [data, setData] = useState(initData);
+	const [showEditMode, setShowEditMode] = useState(false);
+	console.log('fdsafdafda', savedData)
 	const save = () => {
-		console.log('saved data +++', data);
-		setShowDisplay(true);
+		setShowEditMode(false);
+		savedData = [...data];
+		console.log(savedData);
 	}
 	const clear = (event) => {
-		// setData(initialData);
-		data.map((item,index)=>data[index][Object.keys(item)].checked = false);
-		// console.log(data);
-		setData(data.slice(0))
+		data.forEach((item)=>item.checked = false);
+		setData([...data]);
 	}
 	const cancel = () => {
-		// console.log('ffdafdafd');
+		console.log('savedData', savedData)
+		setData(savedData);
+	}
+
+	const edit = () =>{
+		setShowEditMode(true);
 	}
 
 	const updateCheckBox = (event) => {
-		const index = event.target.getAttribute('dataindex');
-		const value = event.target.value;
-		data[index][value].checked = !data[index][value].checked;
-		setData(data.slice(0));
+		const dataIndex = event.target.getAttribute('dataindex');
+		data.forEach((item,index)=>{
+			if(index === parseInt(dataIndex)){
+				item.checked = !item.checked
+			}
+		});
+
+		setData([...data]);
 	}
 
 	return (
 		<div>
-			{data.map((item, index) => <CheckBox 
-				value={Object.keys(item)} 
-				text={data[index][Object.keys(item)].text} 
-				checked={data[index][Object.keys(item)].checked} 
-				key={index} statusChange={updateCheckBox} 
-				index={index} />
-			)}
-			<Button text='Save' onClick={save} />
-			<Button text='Clear' onClick={clear} />
-			<Button text='Cancel' onClick={cancel} />
-			{showDisplay && <Display data={data}/>}
+			<Display data={data} showEditSwitch={edit}/>
+			{showEditMode && <EditorySection data={data} updateCheckBox={updateCheckBox} saveFn={save} clearFn={clear} cancelFn={cancel}/>}
 		</div>
 	)
 }
 
 
-
-
-
-ReactDOM.render(<CheckBoxContainer initCheckBox={initData} />, document.getElementById('root'));
+ReactDOM.render(<MultiSelectApp/>, document.getElementById('root'));
