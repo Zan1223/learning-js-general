@@ -1,4 +1,4 @@
-const http = require('http');
+const http = require('https');
 const url = require('url');
 const fs = require('fs');
 const axios = require('axios')
@@ -8,7 +8,7 @@ const options = {
   key: fs.readFileSync('./server.key'), //this needs to be updated once running on remote server
   cert: fs.readFileSync('./server.crt'), //this needs to be updated once running on remote server
 }
-//console.log('options.key===>', options.key)
+
 //create a server 
 const server = http.createServer(options);
 const STOCK_API = 'https://snrequest.atlassian.net/rest/servicedeskapi/request';
@@ -48,7 +48,8 @@ async function httpRequest(url, data, response) {
   response.setHeader('Access-Control-Allow-Origin', '*');
   // Send response back to requestor
   response.end(JSON.stringify({
-    "status": midCallRes
+    status: midCallRes,
+    message: midCallRes == '201' ? 'Request was created successfully' : 'Request was not created successfully',
   }));
 
   // email service needs to allow third-party access
@@ -77,33 +78,44 @@ server.on('request', (request, response) => {
   })
 
   request.on('end', () => {
-    console.log('data in end ===>', data);
-    console.log('******************************** New Request ***********************************');
-    console.log(JSON.parse(data));
-    const {
-      serviceDeskId,
-      requestTypeId,
-      customfield_10055,
-      summary,
-      description
-    } = JSON.parse(data);
-    switch (requestPath) {
-      //when the request URL includes the /eloqua path
-      case END_POINTS.postJsd: {
-        httpRequest.call(this, `${STOCK_API}`, {
-          serviceDeskId,
-          requestTypeId,
-          requestFieldValues: {
-            customfield_10055,
-            summary,
-            description,
-          }
-        }, response);
-        break;
+    try {
+      console.log('******************************** New Request ***********************************');
+      console.log(JSON.parse(data));
+      const {
+        serviceDeskId,
+        requestTypeId,
+        customfield_10055,
+        summary,
+        description
+      } = JSON.parse(data);
+      switch (requestPath) {
+        //when the request URL includes the /eloqua path
+        case END_POINTS.postJsd: {
+          httpRequest.call(this, `${STOCK_API}`, {
+            serviceDeskId,
+            requestTypeId,
+            requestFieldValues: {
+              customfield_10055,
+              summary,
+              description,
+            }
+          }, response);
+          break;
+        }
+        default:
+          break;
       }
-      default:
-        break;
+    } catch (err) {
+      response.setHeader('Content-Type', 'application/json');
+      response.setHeader('X-Content-Type-Options', 'nosniff');
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.setHeader('Access-Control-Allow-Headers', 'x-content-type-options');
+      response.end(JSON.stringify({
+        status: 400,
+        message: String(err) || 'Something went wrong, please try again later.'
+      }))
     }
+
   });
 })
 
