@@ -55,13 +55,13 @@ server.on('request', (request, response) => {
             rs.pipe(response);
             break;
         }
-        case '/bin/stock-current': {
+        case '/stock/stock-current': {
             // current stock info
             // response.setHeader('X-Content-Type-Options','nosniff');
             httpRequest.call(this, `${STOCK_API}/quotes`, options, request, response);
             break;
         }
-        case '/bin/stock-datelookup': {
+        case '/stock/stock-datelookup': {
             const date = requestUrl.query.date;
             console.log(date);
             // historical info lookup
@@ -69,13 +69,13 @@ server.on('request', (request, response) => {
             //httpRequest.call(this, `${STOCK_API}/quotes`, options, request, response);
             break;
         }
-        case '/bin/stock-weeklookup': {
+        case '/stock/stock-weeklookup': {
             const date = requestUrl.query.date;
             // historical info lookup
             httpRequest.call(this, `${STOCK_API}/quotes/lookup/weekof?date=${date}&symbol=NOW`, options, request, response);
             break;
         }
-        case '/bin/stock-filing': {
+        case '/stock/stock-filing': {
             // filings
             httpRequest.call(this, `${STOCK_API}/filings`, options, request, response);
             break;
