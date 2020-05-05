@@ -1,4 +1,4 @@
-const http = require('https');
+const http = require('http');
 const url = require('url');
 const fs = require('fs');
 const axios = require('axios')
@@ -73,9 +73,11 @@ server.on('request', (request, response) => {
   let data = '';
   request.on('data', chunk => {
     data += chunk;
+    console.log('data in data ===>', chunk);
   })
 
   request.on('end', () => {
+    console.log('data in end ===>', data);
     console.log('******************************** New Request ***********************************');
     console.log(JSON.parse(data));
     const {
