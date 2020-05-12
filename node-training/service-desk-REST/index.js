@@ -3,7 +3,7 @@ const formidable = require('formidable');
 const fs = require('fs');
 const axios = require('axios');
 const request = require('request');
-const reqestForm = require('./form');
+// const reqestForm = require('./form');
 
 const options = {
   key: fs.readFileSync('./server.key'), //this needs to be updated once running on remote server
@@ -14,9 +14,13 @@ const API_PATH = 'https://marketingtechnology.service-now.com/api/now/table/u_ma
 const END_POINTS = {
   postReq: '/service_desk_request',
   getForm: '/service_desk_form',
+  formHTML: './form/form.html',
+  style: '/form/style.css',
+  script: '/form/script.js'
 }
 
 function constructArr(a) {
+  if(!a) return null;
   return {
     'name': a.name,
     'path': a.path
@@ -50,12 +54,13 @@ function requestFn(files, ticketInfo, res) {
     }
   };
 
-  //console.log('requestOpts ====>', requestOpts);
   request(requestOpts, (error, response, body) => {
     console.log(`callback from request ====> ${body}`);
     fs.unlink(newPath, (err) => {
-      if (err) throw err;
-      console.log('file has been deleted');
+      if (err) {
+        return console.log('err happend while tmep files being deleted ===>', err); 
+      }
+      console.log('temp file deleted to free up memory');
     })
     // remove the first item in the array;
     arr.shift();
@@ -81,7 +86,7 @@ async function httpRequest(url, data, res) {
   // console.log('data.files ***************************', data.files)
   let uploadedFiles = data.files.attachment;
   uploadedFiles = Array.isArray(uploadedFiles) ? uploadedFiles.map(file => constructArr(file)) : [constructArr(uploadedFiles)];
-  console.log('uploadedFiles ===>', uploadedFiles);
+  
   try {
 
     // call to create a ticket on Service Desk instance.
@@ -100,7 +105,7 @@ async function httpRequest(url, data, res) {
     const ticketInfo = midCall.data.result;
 
     // execute if there is attachment
-    if (uploadedFiles[0].name) {
+    if (uploadedFiles[0] && uploadedFiles[0].name) {
 
       requestFn(uploadedFiles, ticketInfo, res)
 
@@ -156,13 +161,39 @@ http.createServer(options, function (req, res) {
     res.writeHead(200, {
       'content-type': 'text/html'
     });
-    res.end(reqestForm(END_POINTS.postReq));
+    //res.end(fs.createReadStream('./form.html'));
+    // render the form html
+    fs.createReadStream(END_POINTS.formHTML).pipe(res);
+
     return;
   }
+  
+  if (req.url == END_POINTS.style && req.method.toLowerCase() == 'get'){
+    res.writeHead(200, {
+      'content-type': 'text/css'
+    });
+    //res.end(fs.createReadStream('./form.html'));
+    // render the form html
+    fs.createReadStream(`.${END_POINTS.style}`).pipe(res);
+
+    return;
+  }
+
+  if (req.url == END_POINTS.script && req.method.toLowerCase() == 'get'){
+    res.writeHead(200, {
+      'content-type': 'text/javascript'
+    });
+    //res.end(fs.createReadStream('./form.html'));
+    // render the form html
+    fs.createReadStream(`.${END_POINTS.script}`).pipe(res);
+
+    return;
+  }
+
   // else return 400 bad request
-  res.writeHead(400, {
+  res.writeHead(404, {
     'content-type': 'text/html'
   });
-  res.end(`<h1>Bad request</h1>`);
+  res.end(`<h1>404 Page Not Found.</h1>`);
 
 }).listen(8889, () => console.log('server running on port: 8889'));

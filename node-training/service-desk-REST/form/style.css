@@ -1,0 +1,14 @@
+#sd-form,
+#sd-thank-you.visible {
+  display: block
+}
+
+#sd-form.invisible,
+#sd-thank-you {
+  display: none
+}
+
+#sd-form label,
+#sd-form label .sd-form-field {
+  display: block;
+}

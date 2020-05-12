@@ -1,0 +1,30 @@
+<section id="sd-form-wrapper">
+  <link rel="stylesheet" href="./form/style.css" type="text/css"/>
+  <section id="sd-form-section">
+    <form action="/service_desk_request" id="sd-form">
+      <label>
+        Email
+        <input type="email" name="u_email" class="sd-form-field" required />
+      </label>
+      <label>
+        Subject
+        <input type="text" name="short_description" class="sd-form-field" required />
+      </label>
+      <label>
+        Description
+        <textarea name="description" class="sd-form-field" /></textarea>
+      </label>
+      <label>
+        Attachment
+        <input type="file" name="attachment" id="uploadFile" multiple class="sd-form-field"
+          accept="image/png, image/jpeg" />
+      </label>
+      <input type="submit" value="Submit" />
+    </form>
+    <div id="sd-thank-you">
+      <p>Thank you for submitting your request. You will receive an email from us shortly.</p>
+    </div>
+  </section>
+
+  <script type="text/javascript" src="./form/script.js"></script>
+</section>
