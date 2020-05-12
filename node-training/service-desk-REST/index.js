@@ -1,39 +1,90 @@
-const http = require('http');
+const http = require('https');
 const formidable = require('formidable');
-const util = require('util');
-const url = require('url');
 const fs = require('fs');
-const axios = require('axios')
+const axios = require('axios');
+const request = require('request');
+const reqestForm = require('./form');
 
-// console.log(formidable);
-// console.log(util);
-
-// console.log('running ....')
 const options = {
   key: fs.readFileSync('./server.key'), //this needs to be updated once running on remote server
   cert: fs.readFileSync('./server.crt'), //this needs to be updated once running on remote server
 }
 
-//create a server 
-const server = http.createServer(options);
 const API_PATH = 'https://marketingtechnology.service-now.com/api/now/table/u_martech_service_desk';
 const END_POINTS = {
-  postJsd: '/service_desk_request',
+  postReq: '/service_desk_request',
+  getForm: '/service_desk_form',
 }
 
-function errResponse(response, err){
-  response.setHeader('Content-Type', 'application/json');
-  response.setHeader('X-Content-Type-Options', 'nosniff');
-  response.setHeader('Access-Control-Allow-Origin', '*');
-  response.setHeader('Access-Control-Allow-Headers', 'x-content-type-options');
-  response.end(JSON.stringify({
-    message: String(err) || 'Something went wrong, please try again later.'
-  }))
+function constructArr(a) {
+  return {
+    'name': a.name,
+    'path': a.path
+  }
 }
 
-async function httpRequest(url, data, response) {
+function requestFn(files, ticketInfo, res) {
+  const arr = files.slice(0);
+  const {
+    sys_class_name,
+    sys_id
+  } = ticketInfo;
 
-  try{
+  const oldPath = files[0].path;
+  const newPath = `${oldPath.substr(0,oldPath.lastIndexOf('/'))}/${files[0].name}`;
+
+  // rename the temp file and keep the extension
+  fs.renameSync(oldPath, newPath);
+
+  const requestOpts = {
+    method: "POST",
+    url: "https://marketingtechnology.service-now.com/api/now/attachment/upload",
+    headers: {
+      "Authorization": `Basic ${Buffer.from('martech.servicedesk'+':'+'Test@123').toString('base64')}`,
+      "Content-Type": "multipart/form-data",
+    },
+    formData: {
+      "table_name": sys_class_name,
+      "table_sys_id": sys_id,
+      "file": fs.createReadStream(newPath)
+    }
+  };
+
+  //console.log('requestOpts ====>', requestOpts);
+  request(requestOpts, (error, response, body) => {
+    console.log(`callback from request ====> ${body}`);
+    fs.unlink(newPath, (err) => {
+      if (err) throw err;
+      console.log('file has been deleted');
+    })
+    // remove the first item in the array;
+    arr.shift();
+
+    if (!arr.length) {
+      console.log('no more arr so opt out')
+      res.writeHead(201, {
+        'Access-Control-Allow-Origin': '*',
+        'Context-Type': 'application/json',
+        'X-Content-Type-Options': 'nosniff'
+      });
+      res.end('data received');
+      return;
+    }
+    // if there is item in array, recurse the function
+    requestFn(arr, ticketInfo, res);
+  })
+}
+
+
+async function httpRequest(url, data, res) {
+
+  // console.log('data.files ***************************', data.files)
+  let uploadedFiles = data.files.attachment;
+  uploadedFiles = Array.isArray(uploadedFiles) ? uploadedFiles.map(file => constructArr(file)) : [constructArr(uploadedFiles)];
+  console.log('uploadedFiles ===>', uploadedFiles);
+  try {
+
+    // call to create a ticket on Service Desk instance.
     const midCall = await axios({
       url,
       "method": 'POST',
@@ -42,77 +93,76 @@ async function httpRequest(url, data, response) {
         "Content-Type": "application/json",
         "Authorization": `Basic ${Buffer.from('martech.servicedesk'+':'+'Test@123').toString('base64')}`
       },
-      "data": JSON.stringify(data),
+      "data": JSON.stringify(data.fields),
     });
-  
-    const midCallRes = midCall.status;
-    // Set response headers
-    response.setHeader('Content-Type', 'application/json');
-    response.setHeader('X-Content-Type-Options', 'nosniff');
-    response.setHeader('Access-Control-Allow-Origin', '*');
-    console.log('coming to this block')
-    // Send response back to requestor
-    response.end(JSON.stringify({
-      status: midCallRes,
-      message: midCallRes == '201' ? 'Request was created successfully' : 'Request was not created successfully',
-    }));
-  }catch(err){
-    console.log(String(err));
-    errResponse.call(this,response, err)
-  }
 
+    // get ticket sys_id and table name for attaching the images
+    const ticketInfo = midCall.data.result;
+
+    // execute if there is attachment
+    if (uploadedFiles[0].name) {
+
+      requestFn(uploadedFiles, ticketInfo, res)
+
+    } else {
+      res.writeHead(201, {
+        'Access-Control-Allow-Origin': '*',
+        'Context-Type': 'application/json',
+        'X-Content-Type-Options': 'nosniff'
+      });
+      res.end(JSON.stringify({
+        message: 'Request created successfully.'
+      }));
+    }
+  } catch (err) {
+    console.log(String(err));
+  }
 }
 
 
-server.on('request', (request, response) => {
-  const requestUrl = url.parse(request.url, true);
-  const requestPath = requestUrl.pathname;
-  let data = '';
-  request.on('data', chunk => {
-    data += chunk;
-    console.log('data in data ===>', chunk);
-  })
+http.createServer(options, function (req, res) {
 
-  request.on('end', () => {
-    try {
-      console.log('******************************** New Request START ***********************************');
-      console.log('data ====>', data);
-      console.log('******************************** New Request END ***********************************');
-      // const {
-      //   u_email,
-      //   short_description,
-      //   description
-      // } = JSON.parse(data);
-      // switch (requestPath) {
-      //   //when the request URL includes the /eloqua path
-      //   case END_POINTS.postJsd: {
-      //     // httpRequest.call(this, `${API_PATH}`, {
-      //     //   u_email,
-      //     //   short_description,
-      //     //   description
-      //     // }, response);
-      //     break;
-      //   }
-      //   default:
-      //     break;
-      // }
-      response.end('received it');
-    } catch (err) {
-      errResponse.call(this,response, err)
-    }
-  });
+  // This if statement is here to catch form submissions, and initiate multipart form data parsing.
 
+  if (req.url == END_POINTS.postReq && req.method.toLowerCase() == 'post') {
 
-  if(requestPath === END_POINTS.postJsd && request.method.toLowerCase() === 'post'){
-    console.log('hit right endpoint!!!!!!');
-    
+    // Instantiate a new formidable form for processing.
 
+    var form = new formidable({
+      multiples: true
+    });
 
+    // form.parse analyzes the incoming stream data, picking apart the different fields and files.
 
+    form.parse(req, (err, fields, files) => {
+      if (err) {
+        // Check for and handle any errors here.
+        console.error(err.message);
+        return;
+      }
+
+      // This last line responds to the form submission with a list of the parsed data and files.
+      httpRequest(API_PATH, {
+        fields,
+        files
+      }, res)
+      // res.end();
+    });
+    return;
   }
 
+  // If this is a form submission, then send the form.
+  if (req.url == END_POINTS.getForm && req.method.toLowerCase() == 'get'){
+    res.writeHead(200, {
+      'content-type': 'text/html'
+    });
+    res.end(reqestForm(END_POINTS.postReq));
+    return;
+  }
+  // else return 400 bad request
+  res.writeHead(400, {
+    'content-type': 'text/html'
+  });
+  res.end(`<h1>Bad request</h1>`);
 
-
-})
-
-server.listen(8889, () => console.log('server running on port: 8889'));
+}).listen(8889, () => console.log('server running on port: 8889'));
