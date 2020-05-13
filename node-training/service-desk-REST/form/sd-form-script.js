@@ -12,7 +12,12 @@
   }
 
   function translator(term){
-    return Granite && Granite.I18n.get(term);
+    try {
+      return Granite.I18n.get(term);
+    }catch(err){
+      console.error(err);
+      return false;
+    }
   }
   
   function renderHTML() {
@@ -22,8 +27,30 @@
       #sd-form-wrapper {
         height:100%;
         width: 100%;
-        z-index: 100000;
+        opacity: 0;
+        position: absolute;
+        transition: all 0.2s ease;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        visibility: hidden;
+        z-index: 0;
       }
+
+      #sd-form-wrapper.sd-form-active{
+        opacity: 1;
+        visibility: visible;
+        z-index: 10000000;
+      }
+      #sd-form-wrapper.thank-you-shown #sd-form {
+        display: none;
+      }
+
+      #sd-form-wrapper.thank-you-shown #sd-thank-you {
+        display: block;
+      }
+
       #sd-form-section {
         background-color: #fff;
         max-width: 600px;
@@ -53,12 +80,10 @@
         text-align: center;
       }
   
-      #sd-form,
-      #sd-thank-you.visible {
+      #sd-form{
         display: block
       }
-  
-      #sd-form.invisible,
+
       #sd-thank-you {
         display: none
       }
@@ -204,6 +229,7 @@
           Noto Color Emoji;
         font-size: 18px;
         margin-top: 15px;
+        outline: none;
         padding: 15px 40px;
         transition: .2s ease;
   
@@ -292,11 +318,12 @@
 
   document.body.insertAdjacentHTML('beforeend', renderHTML());
 
-
+  const sdFormWrapper = document.getElementById('sd-form-wrapper');
   const requestForm = document.querySelector('#sd-form-wrapper #sd-form');
-  const requestFormTU = document.querySelector('#sd-form-wrapper #sd-thank-you');
   const requiredFields = requestForm.querySelectorAll('.sd-form-field');
   const formCloseBtn = document.querySelector('#sd-form-section #sd-overlay-close');
+  let closeOverlayCounter = null;
+
 
   function showErrorMessageSD(field, errorMsg){
     field.parentElement.insertAdjacentHTML('beforeend', '<span class="sd-field-error-msg">' + errorMsg + '</span>');
@@ -306,6 +333,17 @@
   function hideErrorMessageSD(field){
     field.parentElement.querySelector('.sd-field-error-msg') && field.parentElement.querySelector('.sd-field-error-msg').remove();
     field.classList.remove('error-occured');
+  }
+
+  function closeOutSdOverlay(fields){
+    sdFormWrapper.classList.remove('sd-form-active');
+    sdFormWrapper.classList.remove('thank-you-shown');
+    Array.prototype.forEach.call(fields, function (field) {
+      if(field.type !== 'hidden'){
+        field.value = "";
+        hideErrorMessageSD(field);
+      }
+    });
   }
 
   Array.prototype.forEach.call(requiredFields, function (field) {
@@ -320,13 +358,18 @@
     })
   });
 
-  console.log('before event listener');
-
-  console.log('formCloseBtn', formCloseBtn);
+  window.addEventListener('click', function(e){
+    if(e.target.classList.contains('sd-form-trigger')){
+      sdFormWrapper.classList.add('sd-form-active')
+    }
+  })
 
   formCloseBtn.addEventListener('click', function(e){
-    document.getElementById('sd-form-wrapper').remove();
+    clearTimeout(closeOverlayCounter);
+    closeOutSdOverlay(requiredFields);
   })
+
+
 
   requestForm.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -377,7 +420,6 @@
           for (let key in attachments) {
             // jump out of the execution if there is a non-image uploaded
             if (key < attachments.length) {
-              console.log('attachments[key].type ==>', attachments[key].type);
               if (!RegExp('image\/png|image\/jpeg').test(attachments[key].type)) {
                 showErrorMessageSD(field, TXT.asssetType);
                 imageOnly = false;
@@ -393,9 +435,6 @@
     })
 
     if (!(imageOnly && validFields)) {
-      // display the error message for not uploading non-image asset
-      // TODO: display the error message
-      console.log('failed the validation check')
       return;
     };
 
@@ -405,13 +444,11 @@
     sdRquestXhr.addEventListener("readystatechange", function () {
       if (this.readyState === 4 && this.status === 201) {
         // 201 means request inserted to Service Desk successfully
-        requestForm.classList.add('invisible');
-        requestFormTU.classList.add('visible');
-
+        sdFormWrapper.classList.add('thank-you-shown');
         // remove the values from all fields
-        Array.prototype.forEach.call(fields, function (field) {
-          field.value = "";
-        })
+        closeOverlayCounter = setTimeout(function(){
+          closeOutSdOverlay(fields);
+        }, 3000);
       }
     });
 
@@ -420,6 +457,5 @@
     sdRquestXhr.send(data);
 
   })
-
 
 }()

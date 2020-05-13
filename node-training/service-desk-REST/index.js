@@ -14,6 +14,8 @@ const END_POINTS = {
   postReq: '/service_desk_request',
   getForm: '/service_desk_form',
   formHTML: './form/form.html',
+  formDevEnv: './form/dev-env.html',
+  formScript: './form/sd-form-script.js',
 }
 
 function constructArr(a) {
@@ -161,6 +163,28 @@ http.createServer(options, function (req, res) {
     //res.end(fs.createReadStream('./form.html'));
     // render the form html
     fs.createReadStream(END_POINTS.formHTML).pipe(res);
+
+    return;
+  }
+
+  if (req.url == '/form_dev_env' && req.method.toLowerCase() == 'get'){
+    res.writeHead(200, {
+      'content-type': 'text/html'
+    });
+    //res.end(fs.createReadStream('./form.html'));
+    // render the form html
+    fs.createReadStream(END_POINTS.formDevEnv).pipe(res);
+
+    return;
+  }
+
+  if (req.url == '/sd-form-script.js' && req.method.toLowerCase() == 'get'){
+    res.writeHead(200, {
+      'content-type': 'text/javascript'
+    });
+    //res.end(fs.createReadStream('./form.html'));
+    // render the form html
+    fs.createReadStream(END_POINTS.formScript).pipe(res);
 
     return;
   }
