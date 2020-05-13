@@ -12,14 +12,13 @@ const options = {
 const API_PATH = 'https://marketingtechnology.service-now.com/api/now/table/incident';
 const END_POINTS = {
   postReq: '/service_desk_request',
-  getForm: '/service_desk_form',
-  formHTML: './form/form.html',
-  formDevEnv: './form/dev-env.html',
+  devEnv: '/service_desk_form',
+  formDevEnvPath: './form/dev-env.html',
   formScript: './form/sd-form-script.js',
 }
 
 function constructArr(a) {
-  if(!a) return null;
+  if (!a) return null;
   return {
     'name': a.name,
     'path': a.path
@@ -57,7 +56,7 @@ function requestFn(files, ticketInfo, res) {
     console.log(`callback from request ====> ${body}`);
     fs.unlink(newPath, (err) => {
       if (err) {
-        return console.log('err happend while tmep files being deleted ===>', err); 
+        return console.log('err happend while tmep files being deleted ===>', err);
       }
       console.log('temp file deleted to free up memory');
     })
@@ -68,6 +67,9 @@ function requestFn(files, ticketInfo, res) {
       console.log('no more arr so opt out')
       res.writeHead(201, {
         'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE, PUT',
+        'Access-Control-Allow-Headers': 'append,delete,entries,foreach,get,has,keys,set,values,Authorization',
+        'Access-Control-Allow-Credentials': 'true',
         'Context-Type': 'application/json',
         'X-Content-Type-Options': 'nosniff'
       });
@@ -85,7 +87,7 @@ async function httpRequest(url, data, res) {
   // console.log('data.files ***************************', data.files)
   let uploadedFiles = data.files.attachment;
   uploadedFiles = Array.isArray(uploadedFiles) ? uploadedFiles.map(file => constructArr(file)) : [constructArr(uploadedFiles)];
-  
+
   try {
 
     // call to create a ticket on Service Desk instance.
@@ -109,8 +111,12 @@ async function httpRequest(url, data, res) {
       requestFn(uploadedFiles, ticketInfo, res)
 
     } else {
+      console.log(' no attachment so close the request');
       res.writeHead(201, {
         'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE, PUT',
+        'Access-Control-Allow-Headers': 'append,delete,entries,foreach,get,has,keys,set,values,Authorization',
+        'Access-Control-Allow-Credentials': 'true',
         'Context-Type': 'application/json',
         'X-Content-Type-Options': 'nosniff'
       });
@@ -155,31 +161,29 @@ http.createServer(options, function (req, res) {
     return;
   }
 
-  // If this is a form submission, then send the form.
-  if (req.url == END_POINTS.getForm && req.method.toLowerCase() == 'get'){
+  // If requesting for the form, then send the form page.
+  if (req.url == END_POINTS.devEnv && req.method.toLowerCase() == 'get') {
     res.writeHead(200, {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE, PUT',
+      'Access-Control-Allow-Headers': 'append,delete,entries,foreach,get,has,keys,set,values,Authorization',
+      'Access-Control-Allow-Credentials': 'true',
       'content-type': 'text/html'
     });
     //res.end(fs.createReadStream('./form.html'));
     // render the form html
-    fs.createReadStream(END_POINTS.formHTML).pipe(res);
+    fs.createReadStream(END_POINTS.formDevEnvPath).pipe(res);
 
     return;
   }
 
-  if (req.url == '/form_dev_env' && req.method.toLowerCase() == 'get'){
+  // if requesting for the form script
+  if (req.url == '/sd-form-script.js' && req.method.toLowerCase() == 'get') {
     res.writeHead(200, {
-      'content-type': 'text/html'
-    });
-    //res.end(fs.createReadStream('./form.html'));
-    // render the form html
-    fs.createReadStream(END_POINTS.formDevEnv).pipe(res);
-
-    return;
-  }
-
-  if (req.url == '/sd-form-script.js' && req.method.toLowerCase() == 'get'){
-    res.writeHead(200, {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE, PUT',
+      'Access-Control-Allow-Headers': 'append,delete,entries,foreach,get,has,keys,set,values,Authorization',
+      'Access-Control-Allow-Credentials': 'true',
       'content-type': 'text/javascript'
     });
     //res.end(fs.createReadStream('./form.html'));
@@ -191,6 +195,10 @@ http.createServer(options, function (req, res) {
 
   // else return 400 bad request
   res.writeHead(404, {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE, PUT',
+    'Access-Control-Allow-Headers': 'append,delete,entries,foreach,get,has,keys,set,values,Authorization',
+    'Access-Control-Allow-Credentials': 'true',
     'content-type': 'text/html'
   });
   res.end(`<h1>404 Page Not Found.</h1>`);

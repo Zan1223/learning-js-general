@@ -4,23 +4,27 @@
     subject: translator('Subject') || 'Subject',
     description: translator('Description') || 'Description',
     submit: translator('Submit') || 'Submit',
-    submissionThankYou: translator('submissionThankYou') || 'Thank you for submitting your request. One of our support members will reach out to you shortly.',
+    submissionThankYou: translator('submissionThankYou') || 'Thank you for submitting your request. We will confirm your submission shortly.',
     required: translator('required') || 'Required',
     emailError: translator('emailisnotvaliderror') || 'Invalid Email',
     htmlTag: translator('noHTMLTagsAllowed') || 'Invalid input: < or > symbol is not allowed',
     asssetType: translator('invalidAttachmentType') || 'Invalid attachment Type: only image/jpeg and image/png are allowed',
+    chooseFiles: translator('chooseFiles') || 'Choose Files',
+    noFilesChosen: translator('noFilesChosen') || 'No File Chosen',
   }
 
   function translator(term){
     try {
       return Granite.I18n.get(term);
     }catch(err){
-      console.error(err);
+      // console.error(err);
       return false;
     }
   }
   
   function renderHTML() {
+    // set action path for the form based on the env
+    const actionPath = window.location.hostname === 'localhost' ? '/service_desk_request' : 'https://servicedesk.martchservicenow.com/service_desk_request';
     return (`
     <section id="sd-form-wrapper">
     <style>
@@ -48,6 +52,10 @@
       }
 
       #sd-form-wrapper.thank-you-shown #sd-thank-you {
+        display: block;
+      }
+
+      #sd-form-wrapper.sd-form-submitting #sd-loading-spinner{
         display: block;
       }
 
@@ -119,6 +127,7 @@
   
       #sd-form label .sd-form-field {
         border: none;
+        box-sizing: border-box;
         font-size: 16px;
         font-stretch: normal;
         font-style: normal;
@@ -126,7 +135,7 @@
         letter-spacing: 0;
         height: 48px;
         line-height: 37.2px;
-        font-family: "GilroySemiBold", -apple-system,
+        font-family: "GilroyRegular", -apple-system,
           BlinkMacSystemFont,
           Segoe UI,
           Roboto,
@@ -150,13 +159,14 @@
   
       #sd-form label .sd-form-field:not([type=file]) {
         background-color: #f7f7f7;
-        padding: 20px 10px 0 16px;
+        padding: 20px 20px 0 16px;
       }
   
       #sd-form label .sd-form-field[type=file] {
         cursor: pointer;
         font-size: 14px;
         height: auto;
+        line-height: 0;
         margin: 30px 0;
         max-width: 320px;
         width: 100%;
@@ -261,11 +271,109 @@
         cursor: pointer;
         opacity: 1;
       }
-  
+
+      #sd-loading-spinner {
+        bottom: 0;
+        display: none;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+      }
+
+      .sd-spinner-lds-roller {
+        -moz-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        -o-transform: translate(-50%, -50%);
+        -webkit-transform: translate(-50%, -50%);
+        display: inline-block;
+        height: 85px;
+        left: 50%;
+        position: relative;
+        top: 43%;
+        transform: translate(-50%, -50%);
+        width: 85px;
+        z-index: 11;
+     }
+      .sd-spinner-lds-roller div {
+        animation: sd-spinner-lds-roller 1.2s linear infinite;
+        transform-origin: 42px 42px;
+     }
+      .sd-spinner-lds-roller div:after, .sd-spinner-lds-roller div::after {
+        background: #293e40;
+        border-radius: 20%;
+        content: " ";
+        display: block;
+        height: 18px;
+        left: 39px;
+        position: absolute;
+        top: 3px;
+        width: 6px;
+     }
+      .sd-spinner-lds-roller div:nth-child(1) {
+        animation-delay: -1.1s;
+        transform: rotate(0deg);
+     }
+      .sd-spinner-lds-roller div:nth-child(2) {
+        animation-delay: -1s;
+        transform: rotate(30deg);
+     }
+      .sd-spinner-lds-roller div:nth-child(3) {
+        animation-delay: -0.9s;
+        transform: rotate(60deg);
+     }
+      .sd-spinner-lds-roller div:nth-child(4) {
+        animation-delay: -0.8s;
+        transform: rotate(90deg);
+     }
+      .sd-spinner-lds-roller div:nth-child(5) {
+        animation-delay: -0.7s;
+        transform: rotate(120deg);
+     }
+      .sd-spinner-lds-roller div:nth-child(6) {
+        animation-delay: -0.6s;
+        transform: rotate(150deg);
+     }
+      .sd-spinner-lds-roller div:nth-child(7) {
+        animation-delay: -0.5s;
+        transform: rotate(180deg);
+     }
+      .sd-spinner-lds-roller div:nth-child(8) {
+        animation-delay: -0.4s;
+        transform: rotate(210deg);
+     }
+      .sd-spinner-lds-roller div:nth-child(9) {
+        animation-delay: -0.3s;
+        transform: rotate(240deg);
+     }
+      .sd-spinner-lds-roller div:nth-child(10) {
+        animation-delay: -0.2s;
+        transform: rotate(270deg);
+     }
+      .sd-spinner-lds-roller div:nth-child(11) {
+        animation-delay: -0.1s;
+        transform: rotate(300deg);
+     }
+      .sd-spinner-lds-roller div:nth-child(12) {
+        animation-delay: 0s;
+        transform: rotate(330deg);
+     }
+      @keyframes sd-spinner-lds-roller {
+        0% {
+          opacity: 1;
+       }
+        100% {
+          opacity: 0;
+       }
+     }
+      
       @media (min-width: 768px) {
         #sd-form-section {
           padding: 60px 50px;
           top: 50px;
+        }
+        #sd-form label .sd-form-label {
+          top: 15px;
         }
         #sd-overlay-close {
           padding: 0 25px;
@@ -282,7 +390,7 @@
       }
     </style>
     <section id="sd-form-section">
-      <form action="/service_desk_request" id="sd-form">
+      <form action="${actionPath}" id="sd-form">
         <input type="hidden" name="caller_id" class="sd-form-field" value="Guest" />
         <input type="hidden" name="contact_type" class="sd-form-field" value="form" />
         <label>
@@ -309,19 +417,36 @@
       <aside id="sd-overlay-close">
         <svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <desc>Created with Sketch.</desc> <defs></defs> <g id="Breakpoints" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"> <g id="1700_FulidGrid-Copy" transform="translate(-1603.000000, -68.000000)" stroke="#FFFFFF" stroke-width="2"> <g id="Name-Block" transform="translate(850.000000, 0.000000)"> <g id="Group-3" transform="translate(639.000000, 61.000000)"> <g id="Desktop/3.About_Us-Leadership-Bio/Module_01/Icon/icon_x_desktop-Copy" transform="translate(121.727922, 14.727922) rotate(-315.000000) translate(-121.727922, -14.727922) translate(111.727922, 4.727922)"> <path d="M19.4117647,10 L0.588235294,10" id="Line"></path> <path d="M10,19.4117647 L10,0.588235294" id="Line-Copy"></path> </g> </g> </g> </g> </g></svg>
       </aside>
+
+      <section id="sd-loading-spinner">
+        <div class="sd-spinner-lds-roller">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </section>
     </section>
   
     <section id="sd-drop-shadow"></section>
-  
   </section>`)
   }
 
   document.body.insertAdjacentHTML('beforeend', renderHTML());
 
   const sdFormWrapper = document.getElementById('sd-form-wrapper');
-  const requestForm = document.querySelector('#sd-form-wrapper #sd-form');
+  const requestForm = sdFormWrapper.querySelector('#sd-form');
   const requiredFields = requestForm.querySelectorAll('.sd-form-field');
   const formCloseBtn = document.querySelector('#sd-form-section #sd-overlay-close');
+  const formShadowDrop = sdFormWrapper.querySelector('#sd-drop-shadow');
   let closeOverlayCounter = null;
 
 
@@ -337,13 +462,19 @@
 
   function closeOutSdOverlay(fields){
     sdFormWrapper.classList.remove('sd-form-active');
-    sdFormWrapper.classList.remove('thank-you-shown');
-    Array.prototype.forEach.call(fields, function (field) {
-      if(field.type !== 'hidden'){
-        field.value = "";
-        hideErrorMessageSD(field);
-      }
-    });
+    if(sdFormWrapper.classList.contains('thank-you-shown')){
+      // only clear out the form data while on thank you view
+      Array.prototype.forEach.call(fields, function (field) {
+        if(field.type !== 'hidden'){
+          field.value = "";
+          field.classList.remove('field-has-value');
+          hideErrorMessageSD(field);
+        }
+      });
+      setTimeout(function(){
+        sdFormWrapper.classList.remove('thank-you-shown');
+      }, 250)
+    }
   }
 
   Array.prototype.forEach.call(requiredFields, function (field) {
@@ -363,13 +494,16 @@
       sdFormWrapper.classList.add('sd-form-active')
     }
   })
-
+  // close the overlay while clicking on the close button
   formCloseBtn.addEventListener('click', function(e){
     clearTimeout(closeOverlayCounter);
     closeOutSdOverlay(requiredFields);
-  })
-
-
+  });
+  // close the overlay while clicking outside the form
+  formShadowDrop.addEventListener('click', function(e){
+    clearTimeout(closeOverlayCounter);
+    closeOutSdOverlay(requiredFields);
+  });
 
   requestForm.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -387,7 +521,7 @@
 
       // check if the field is empty
       if (field.classList.contains('mandatory-field') && !fieldValue) {
-        console.log('empty value for mandatory field');
+       // console.log('empty value for mandatory field');
         validFields = false;
         showErrorMessageSD(field, TXT.required);
         return;
@@ -395,7 +529,7 @@
 
       // check if the field contains HTML tags
       if(/<|\/>|>/.test(fieldValue)){
-        console.log('conntains HTML tag');
+      //  console.log('conntains HTML tag');
         showErrorMessageSD(field, TXT.htmlTag);
         validFields = false;
         return;
@@ -405,7 +539,7 @@
       if (field.type ==='email'){
         const patern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         if(!patern.test(fieldValue)){
-          console.log('invalid email');
+         // console.log('invalid email');
           showErrorMessageSD(field, TXT.emailError);
           validFields = false;
           return;
@@ -438,22 +572,31 @@
       return;
     };
 
+    // validations passed, entering Ajax call to submit the form
+    // initiate the spinner
+    sdFormWrapper.classList.add('sd-form-submitting');
+
     const sdRquestXhr = new XMLHttpRequest();
-    sdRquestXhr.withCredentials = true;
 
     sdRquestXhr.addEventListener("readystatechange", function () {
       if (this.readyState === 4 && this.status === 201) {
         // 201 means request inserted to Service Desk successfully
+        sdFormWrapper.classList.remove('sd-form-submitting');
         sdFormWrapper.classList.add('thank-you-shown');
         // remove the values from all fields
         closeOverlayCounter = setTimeout(function(){
           closeOutSdOverlay(fields);
-        }, 3000);
+        }, 5000);
       }
+
+      if (this.readyState === 4 && this.status !== 201) {
+        // Ajax call failed, disable spinner
+        sdFormWrapper.classList.remove('sd-form-submitting');
+      }
+
     });
 
     sdRquestXhr.open("POST", requestForm.getAttribute('action'));
-    sdRquestXhr.setRequestHeader("Authorization", "Basic bWFydGVjaC5zZXJ2aWNlZGVzazpUZXN0QDEyMw==");
     sdRquestXhr.send(data);
 
   })
