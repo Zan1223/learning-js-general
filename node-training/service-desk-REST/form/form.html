@@ -1,30 +1,324 @@
 <section id="sd-form-wrapper">
-  <link rel="stylesheet" href="./form/style.css" type="text/css"/>
+  <style>
+    #sd-form-wrapper * {
+      color: #293e40;
+    }
+
+    #sd-form,
+    #sd-thank-you.visible {
+      display: block
+    }
+
+    #sd-form.invisible,
+    #sd-thank-you {
+      display: none
+    }
+
+    #sd-thank-you p {
+      font-family: "GilroyRegular", -apple-system,
+        BlinkMacSystemFont,
+        Segoe UI,
+        Roboto,
+        Helvetica Neue,
+        Arial,
+        Noto Sans,
+        sans-serif,
+        Apple Color Emoji,
+        Segoe UI Emoji,
+        Segoe UI Symbol,
+        Noto Color Emoji;
+      font-size: 18px;
+    }
+
+    #sd-form label {
+      margin-bottom: 8px;
+    }
+
+    #sd-form label,
+    #sd-form label .sd-form-field {
+      display: block;
+      position: relative;
+      width: 100%;
+    }
+
+    #sd-form label .sd-form-field {
+      border: none;
+      font-size: 16px;
+      font-stretch: normal;
+      font-style: normal;
+      font-weight: 400;
+      letter-spacing: 0;
+      height: 48px;
+      line-height: 37.2px;
+      font-family: "GilroySemiBold", -apple-system,
+        BlinkMacSystemFont,
+        Segoe UI,
+        Roboto,
+        Helvetica Neue,
+        Arial,
+        Noto Sans,
+        sans-serif,
+        Apple Color Emoji,
+        Segoe UI Emoji,
+        Segoe UI Symbol,
+        Noto Color Emoji;
+    }
+
+    #sd-form label .sd-form-field.error-occured {
+      outline: 1px solid #b33233;
+    }
+
+    #sd-form label .sd-form-field:not([type=file]) {
+      background-color: #f7f7f7;
+      padding: 20px 10px 0 16px;
+    }
+
+    #sd-form label .sd-form-field[type=file] {
+      font-size: 14px;
+      height: auto;
+      margin: 30px 0;
+      width: auto;
+    }
+
+    #sd-form label textarea.sd-form-field {
+      height: 100px;
+      resize: none;
+    }
+
+    #sd-form label .sd-form-field:focus~.sd-form-label,
+    #sd-form label .sd-form-field.field-has-value~.sd-form-label {
+      font-size: 12px;
+      left: 16px;
+      top: 8px;
+    }
+
+    #sd-form label .sd-form-label {
+      font-size: 14px;
+      left: 20px;
+      line-height: 1.5;
+      position: absolute;
+      top: 13.5px;
+      transition: .2s ease all;
+      font-family: "GilroyRegular", -apple-system,
+        BlinkMacSystemFont,
+        Segoe UI,
+        Roboto,
+        Helvetica Neue,
+        Arial,
+        Noto Sans,
+        sans-serif,
+        Apple Color Emoji,
+        Segoe UI Emoji,
+        Segoe UI Symbol,
+        Noto Color Emoji;
+    }
+
+    #sd-form label .sd-field-error-msg {
+      color:#b33233;
+      font-family: "GilroyRegular", -apple-system,
+        BlinkMacSystemFont,
+        Segoe UI,
+        Roboto,
+        Helvetica Neue,
+        Arial,
+        Noto Sans,
+        sans-serif,
+        Apple Color Emoji,
+        Segoe UI Emoji,
+        Segoe UI Symbol,
+        Noto Color Emoji;
+      font-size: 10px;
+    }
+
+    #sd-form button {
+      border: 2px solid #293e40;
+      cursor: pointer;
+      font-family: "GilroySemiBold", -apple-system,
+        BlinkMacSystemFont,
+        Segoe UI,
+        Roboto,
+        Helvetica Neue,
+        Arial,
+        Noto Sans,
+        sans-serif,
+        Apple Color Emoji,
+        Segoe UI Emoji,
+        Segoe UI Symbol,
+        Noto Color Emoji;
+      font-size: 18px;
+      padding: 15px 40px;
+      transition: .2s ease;
+
+    }
+
+    #sd-form button:hover {
+      background-color: #293e40;
+      color: #fff;
+    }
+
+    @media (min-width: 1024px) {
+      #sd-form label .sd-form-field {
+        height: 56px;
+      }
+    }
+  </style>
+
   <section id="sd-form-section">
     <form action="/service_desk_request" id="sd-form">
+      <input type="hidden" name="caller_id" class="sd-form-field" value="Guest" />
+      <input type="hidden" name="contact_type" class="sd-form-field" value="form" />
       <label>
-        Email
-        <input type="email" name="u_email" class="sd-form-field" required />
+        <input type="email" name="u_email" class="sd-form-field mandatory-field" />
+        <span class="sd-form-label">Email</span>
       </label>
       <label>
-        Subject
-        <input type="text" name="short_description" class="sd-form-field" required />
+        <input type="text" name="short_description" class="sd-form-field mandatory-field" />
+        <span class="sd-form-label">Subject</span>
       </label>
       <label>
-        Description
         <textarea name="description" class="sd-form-field" /></textarea>
+        <span class="sd-form-label">Description</span>
       </label>
       <label>
-        Attachment
         <input type="file" name="attachment" id="uploadFile" multiple class="sd-form-field"
           accept="image/png, image/jpeg" />
       </label>
-      <input type="submit" value="Submit" />
+      <button type="submit" value="submit">Submit</button>
     </form>
     <div id="sd-thank-you">
-      <p>Thank you for submitting your request. You will receive an email from us shortly.</p>
+      <p>Thank you for submitting your request. One of our support members will reach out to you shortly.</p>
     </div>
   </section>
 
-  <script type="text/javascript" src="./form/script.js"></script>
+  <script>
+
+    var requestForm = document.querySelector('#sd-form-wrapper #sd-form');
+    var requestFormTU = document.querySelector('#sd-form-wrapper #sd-thank-you');
+    var requiredFields = requestForm.querySelectorAll('.sd-form-field');
+    var exceptionConsts = {
+      required: 'Required',
+      emailError: 'Invalid Email',
+      htmlTag: 'Invalid input: < or > symbol is not allowed',
+      asssetType: 'Invalid attachment Type: only image/jpeg and image/png are allowed',
+
+    }
+
+    function showErrorMessageSD(field, errorMsg){
+      field.parentElement.insertAdjacentHTML('beforeend', '<span class="sd-field-error-msg">' + errorMsg + '</span>');
+      field.classList.add('error-occured');
+    }
+
+    function hideErrorMessageSD(field){
+      field.parentElement.querySelector('.sd-field-error-msg') && field.parentElement.querySelector('.sd-field-error-msg').remove();
+      field.classList.remove('error-occured');
+    }
+
+    Array.prototype.forEach.call(requiredFields, function (field) {
+      field.addEventListener('blur', function (e) {
+        hideErrorMessageSD(e.target);
+        var value = e.target.value;
+        if (value) {
+          e.target.classList.add('field-has-value');
+        }else{
+          e.target.classList.remove('field-has-value');
+        }
+      })
+    });
+
+    requestForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var fields = requestForm.querySelectorAll('.sd-form-field');
+
+      var data = new FormData();
+      var imageOnly = true;
+      var validFields = true;
+
+      Array.prototype.forEach.call(fields, function (field) {
+        var fieldValue = field.value;
+        // validate the fields
+        // remove the error message at the begining
+        hideErrorMessageSD(field)
+
+        // check if the field is empty
+        if (field.classList.contains('mandatory-field') && !fieldValue) {
+          console.log('empty value for mandatory field');
+          validFields = false;
+          showErrorMessageSD(field, exceptionConsts.required);
+          return;
+        }
+
+        // check if the field contains HTML tags
+        if(/<|\/>|>/.test(fieldValue)){
+          console.log('conntains HTML tag');
+          showErrorMessageSD(field, exceptionConsts.htmlTag);
+          validFields = false;
+          return;
+        }
+
+        // check if the email field is in right email format
+        if (field.type ==='email'){
+          var patern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+          if(!patern.test(fieldValue)){
+            console.log('invalid email');
+            showErrorMessageSD(field, exceptionConsts.emailError);
+            validFields = false;
+            return;
+          }
+        }
+
+
+        if (field.type === 'file') {
+          var attachments = field.files;
+          // console.log('attachments ====>', attachments.length);
+          // data.append(field.name, attachments[0], "da9f9a989d11a082aef0560dc26198c9.jpg" )
+          if (attachments.length) {
+            for (key in attachments) {
+              // jump out of the execution if there is a non-image uploaded
+              if (key < attachments.length) {
+                console.log('attachments[key].type ==>', attachments[key].type);
+                if (!RegExp('image\/png|image\/jpeg').test(attachments[key].type)) {
+                  showErrorMessageSD(field, exceptionConsts.asssetType);
+                  imageOnly = false;
+                  return;
+                };
+                data.append(field.name, attachments[key], attachments[key].name);
+              }
+            }
+          }
+        } else {
+          data.append(field.name, field.value);
+        }
+      })
+
+      if (!(imageOnly && validFields)) {
+        // display the error message for not uploading non-image asset
+        // TODO: display the error message
+        console.log('failed the validation check')
+        return;
+      };
+
+      var sdRquestXhr = new XMLHttpRequest();
+      sdRquestXhr.withCredentials = true;
+
+      sdRquestXhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4 && this.status === 201) {
+          // 201 means request inserted to Service Desk successfully
+          requestForm.classList.add('invisible');
+          requestFormTU.classList.add('visible');
+
+          // remove the values from all fields
+          Array.prototype.forEach.call(fields, function (field) {
+            field.value = "";
+          })
+        }
+      });
+
+      sdRquestXhr.open("POST", requestForm.getAttribute('action'));
+      sdRquestXhr.setRequestHeader("Authorization", "Basic bWFydGVjaC5zZXJ2aWNlZGVzazpUZXN0QDEyMw==");
+      //sdRquestXhr.setRequestHeader("Cookie", "glide_user_route=glide.e6576f4dee1598f95b6fcfa05a8c4c68; BIGipServerpool_marketingtechnology=2844088586.33854.0000; JSESSIONID=4B388AB40C1E4FD1E86B35859BA8782B; glide_session_store=17D88820DBB4D4103582049ED396191C; glide_user_activity=U0N2Mzpzb3hadHJaY2Q2R0Q0UmdwY2V4dTdnaENwUDJHaUpkYTpVbFdHY3VSWDYxNnptdms4VmFwY0xXL0F4NHFWcmRCZjdKM1dsQ0RkTnVVPQ==");
+
+      sdRquestXhr.send(data);
+
+    })
+  </script>
 </section>

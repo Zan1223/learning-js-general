@@ -3,20 +3,17 @@ const formidable = require('formidable');
 const fs = require('fs');
 const axios = require('axios');
 const request = require('request');
-// const reqestForm = require('./form');
 
 const options = {
   key: fs.readFileSync('./server.key'), //this needs to be updated once running on remote server
   cert: fs.readFileSync('./server.crt'), //this needs to be updated once running on remote server
 }
 
-const API_PATH = 'https://marketingtechnology.service-now.com/api/now/table/u_martech_service_desk';
+const API_PATH = 'https://marketingtechnology.service-now.com/api/now/table/incident';
 const END_POINTS = {
   postReq: '/service_desk_request',
   getForm: '/service_desk_form',
   formHTML: './form/form.html',
-  style: '/form/style.css',
-  script: '/form/script.js'
 }
 
 function constructArr(a) {
@@ -164,28 +161,6 @@ http.createServer(options, function (req, res) {
     //res.end(fs.createReadStream('./form.html'));
     // render the form html
     fs.createReadStream(END_POINTS.formHTML).pipe(res);
-
-    return;
-  }
-  
-  if (req.url == END_POINTS.style && req.method.toLowerCase() == 'get'){
-    res.writeHead(200, {
-      'content-type': 'text/css'
-    });
-    //res.end(fs.createReadStream('./form.html'));
-    // render the form html
-    fs.createReadStream(`.${END_POINTS.style}`).pipe(res);
-
-    return;
-  }
-
-  if (req.url == END_POINTS.script && req.method.toLowerCase() == 'get'){
-    res.writeHead(200, {
-      'content-type': 'text/javascript'
-    });
-    //res.end(fs.createReadStream('./form.html'));
-    // render the form html
-    fs.createReadStream(`.${END_POINTS.script}`).pipe(res);
 
     return;
   }
