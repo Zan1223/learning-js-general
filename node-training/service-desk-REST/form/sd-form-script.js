@@ -11,6 +11,17 @@
     asssetType: translator('invalidAttachmentType') || 'Invalid attachment Type: only image/jpeg and image/png are allowed',
     chooseFiles: translator('chooseFiles') || 'Choose Files',
     noFilesChosen: translator('noFilesChosen') || 'No File Chosen',
+    topicDropdown: {
+      signIn: translator('Sign In') || 'Sign In',
+      registration: translator('registration') || 'Registration',
+      changeEmail: translator('changeEmail') || 'Change Email',
+      linkAccounts: translator('linkAccounts') || 'Link Accounts',
+      mergeAccounts: translator('mergeAccount') || 'Merge Accounts',
+      eventAgendaSession: translator('eventAgendaSession') || 'Event - Agenda, Session',
+      eventRegistration: translator('eventRegistration') || 'Event - Registration',
+      generalQuestion: translator('generalQuestion') || 'General Question',
+      others: translator('others') || 'Others',
+    }
   }
 
   function translator(term){
@@ -396,6 +407,20 @@
         <label>
           <input type="email" name="u_email" class="sd-form-field mandatory-field" />
           <span class="sd-form-label">${TXT.email}</span>
+        </label>
+        <label>
+          <select name="subcategory" class="sd-form-field mandatory-field">
+            <option value selected>-- Issue category --</option>
+            <option value="sign in">${TXT.topicDropdown.signIn}</option>
+            <option value="registration">${TXT.topicDropdown.registration}</option>
+            <option value="change email">${TXT.topicDropdown.changeEmail}</option>
+            <option value="link accounts">${TXT.topicDropdown.linkAccounts}</option>
+            <option value="merge accounts">${TXT.topicDropdown.mergeAccounts}</option>
+            <option value="event agenda session">${TXT.topicDropdown.eventAgendaSession}</option>
+            <option value="event registration">${TXT.topicDropdown.eventRegistration}</option>
+            <option value="general question">${TXT.topicDropdown.generalQuestion}</option>
+            <option value="others">${TXT.topicDropdown.others}</option>
+          </select>
         </label>
         <label>
           <input type="text" name="short_description" class="sd-form-field mandatory-field" />
