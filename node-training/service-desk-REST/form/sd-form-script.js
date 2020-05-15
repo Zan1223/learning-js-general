@@ -1,4 +1,4 @@
-!function () {
+! function () {
   const TXT = {
     email: translator('Email') || 'Email',
     subject: translator('Subject') || 'Subject',
@@ -12,6 +12,7 @@
     chooseFiles: translator('chooseFiles') || 'Choose Files',
     noFilesChosen: translator('noFilesChosen') || 'No File Chosen',
     topicDropdown: {
+      issueType: translator('Issue Type') || 'Issue Type',
       signIn: translator('Sign In') || 'Sign In',
       registration: translator('registration') || 'Registration',
       changeEmail: translator('changeEmail') || 'Change Email',
@@ -24,15 +25,15 @@
     }
   }
 
-  function translator(term){
+  function translator(term) {
     try {
       return Granite.I18n.get(term);
-    }catch(err){
+    } catch (err) {
       // console.error(err);
       return false;
     }
   }
-  
+
   function renderHTML() {
     // set action path for the form based on the env
     const actionPath = window.location.hostname === 'localhost' ? '/service_desk_request' : 'https://servicedesk.martchservicenow.com/service_desk_request';
@@ -159,6 +160,36 @@
           Segoe UI Symbol,
           Noto Color Emoji;
       }
+
+      #sd-form label select.sd-form-field {
+        -webkit-appearance: none;
+        background: #f7f7f7;
+        background-image: url(https://www.servicenow.com/content/dam/servicenow/images/demo-asset/icon/arrow-down.png);
+        background-position: 97% center;
+        background-repeat: no-repeat;
+        border: 0;
+        cursor: pointer;
+        font-family: "GilroyRegular", -apple-system,
+        BlinkMacSystemFont,
+        Segoe UI,
+        Roboto,
+        Helvetica Neue,
+        Arial,
+        Noto Sans,
+        sans-serif,
+        Apple Color Emoji,
+        Segoe UI Emoji,
+        Segoe UI Symbol,
+        Noto Color Emoji;
+        font-size: 14px;
+        padding-left: 20px;
+        text-align: left;
+        width: 100%;
+      }
+      #sd-form label select.sd-form-field.field-has-value {
+        font-size: 16px;
+        padding-left: 16px;
+      }
       
       #sd-form label:focus, #sd-form label .sd-form-field:focus {
         outline: none !important;
@@ -168,7 +199,7 @@
         outline: 1px solid #b33233;
       }
   
-      #sd-form label .sd-form-field:not([type=file]) {
+      #sd-form label .sd-form-field:not([type=file]):not(select) {
         background-color: #f7f7f7;
         padding: 20px 20px 0 16px;
       }
@@ -410,7 +441,7 @@
         </label>
         <label>
           <select name="subcategory" class="sd-form-field mandatory-field">
-            <option value selected>-- Issue category --</option>
+            <option value selected>-- ${TXT.topicDropdown.issueType} --</option>
             <option value="sign in">${TXT.topicDropdown.signIn}</option>
             <option value="registration">${TXT.topicDropdown.registration}</option>
             <option value="change email">${TXT.topicDropdown.changeEmail}</option>
@@ -475,28 +506,28 @@
   let closeOverlayCounter = null;
 
 
-  function showErrorMessageSD(field, errorMsg){
+  function showErrorMessageSD(field, errorMsg) {
     field.parentElement.insertAdjacentHTML('beforeend', '<span class="sd-field-error-msg">' + errorMsg + '</span>');
     field.classList.add('error-occured');
   }
 
-  function hideErrorMessageSD(field){
+  function hideErrorMessageSD(field) {
     field.parentElement.querySelector('.sd-field-error-msg') && field.parentElement.querySelector('.sd-field-error-msg').remove();
     field.classList.remove('error-occured');
   }
 
-  function closeOutSdOverlay(fields){
+  function closeOutSdOverlay(fields) {
     sdFormWrapper.classList.remove('sd-form-active');
-    if(sdFormWrapper.classList.contains('thank-you-shown')){
+    if (sdFormWrapper.classList.contains('thank-you-shown')) {
       // only clear out the form data while on thank you view
       Array.prototype.forEach.call(fields, function (field) {
-        if(field.type !== 'hidden'){
+        if (field.type !== 'hidden') {
           field.value = "";
           field.classList.remove('field-has-value');
           hideErrorMessageSD(field);
         }
       });
-      setTimeout(function(){
+      setTimeout(function () {
         sdFormWrapper.classList.remove('thank-you-shown');
       }, 250)
     }
@@ -508,24 +539,24 @@
       const value = e.target.value;
       if (value) {
         e.target.classList.add('field-has-value');
-      }else{
+      } else {
         e.target.classList.remove('field-has-value');
       }
     })
   });
 
-  window.addEventListener('click', function(e){
-    if(e.target.classList.contains('sd-form-trigger')){
+  window.addEventListener('click', function (e) {
+    if (e.target.classList.contains('sd-form-trigger')) {
       sdFormWrapper.classList.add('sd-form-active')
     }
   })
   // close the overlay while clicking on the close button
-  formCloseBtn.addEventListener('click', function(e){
+  formCloseBtn.addEventListener('click', function (e) {
     clearTimeout(closeOverlayCounter);
     closeOutSdOverlay(requiredFields);
   });
   // close the overlay while clicking outside the form
-  formShadowDrop.addEventListener('click', function(e){
+  formShadowDrop.addEventListener('click', function (e) {
     clearTimeout(closeOverlayCounter);
     closeOutSdOverlay(requiredFields);
   });
@@ -546,25 +577,25 @@
 
       // check if the field is empty
       if (field.classList.contains('mandatory-field') && !fieldValue) {
-       // console.log('empty value for mandatory field');
+        // console.log('empty value for mandatory field');
         validFields = false;
         showErrorMessageSD(field, TXT.required);
         return;
       }
 
       // check if the field contains HTML tags
-      if(/<|\/>|>/.test(fieldValue)){
-      //  console.log('conntains HTML tag');
+      if (/<|\/>|>/.test(fieldValue)) {
+        //  console.log('conntains HTML tag');
         showErrorMessageSD(field, TXT.htmlTag);
         validFields = false;
         return;
       }
 
       // check if the email field is in right email format
-      if (field.type ==='email'){
+      if (field.type === 'email') {
         const patern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        if(!patern.test(fieldValue)){
-         // console.log('invalid email');
+        if (!patern.test(fieldValue)) {
+          // console.log('invalid email');
           showErrorMessageSD(field, TXT.emailError);
           validFields = false;
           return;
@@ -609,7 +640,7 @@
         sdFormWrapper.classList.remove('sd-form-submitting');
         sdFormWrapper.classList.add('thank-you-shown');
         // remove the values from all fields
-        closeOverlayCounter = setTimeout(function(){
+        closeOverlayCounter = setTimeout(function () {
           closeOutSdOverlay(fields);
         }, 5000);
       }

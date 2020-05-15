@@ -17,12 +17,26 @@ const END_POINTS = {
   formScript: './form/sd-form-script.js',
 }
 
+const AUTH = `Basic ${Buffer.from('martech.servicedesk'+':'+'Test@123').toString('base64')}`;
+
 function constructArr(a) {
   if (!a) return null;
   return {
     'name': a.name,
     'path': a.path
   }
+}
+
+function resHeaderCompiler(contextType, xType) {
+  const header = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE, PUT',
+    'Context-Type': contextType,
+  }
+
+  if (xType) header['X-Content-Type-Options'] = 'nosniff';
+
+  return header;
 }
 
 function requestFn(files, ticketInfo, res) {
@@ -42,7 +56,7 @@ function requestFn(files, ticketInfo, res) {
     method: "POST",
     url: "https://marketingtechnology.service-now.com/api/now/attachment/upload",
     headers: {
-      "Authorization": `Basic ${Buffer.from('martech.servicedesk'+':'+'Test@123').toString('base64')}`,
+      "Authorization": AUTH,
       "Content-Type": "multipart/form-data",
     },
     formData: {
@@ -65,14 +79,9 @@ function requestFn(files, ticketInfo, res) {
 
     if (!arr.length) {
       console.log('no more arr so opt out')
-      res.writeHead(201, {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE, PUT',
-        'Access-Control-Allow-Headers': 'append,delete,entries,foreach,get,has,keys,set,values,Authorization',
-        'Access-Control-Allow-Credentials': 'true',
-        'Context-Type': 'application/json',
-        'X-Content-Type-Options': 'nosniff'
-      });
+      res.writeHead(201,
+        resHeaderCompiler('application/json', true)
+      );
       res.end('data received');
       return;
     }
@@ -97,7 +106,7 @@ async function httpRequest(url, data, res) {
       "headers": {
         "Accept": 'application/json',
         "Content-Type": "application/json",
-        "Authorization": `Basic ${Buffer.from('martech.servicedesk'+':'+'Test@123').toString('base64')}`
+        "Authorization": AUTH,
       },
       "data": JSON.stringify(data.fields),
     });
@@ -112,14 +121,7 @@ async function httpRequest(url, data, res) {
 
     } else {
       console.log(' no attachment so close the request');
-      res.writeHead(201, {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE, PUT',
-        'Access-Control-Allow-Headers': 'append,delete,entries,foreach,get,has,keys,set,values,Authorization',
-        'Access-Control-Allow-Credentials': 'true',
-        'Context-Type': 'application/json',
-        'X-Content-Type-Options': 'nosniff'
-      });
+      res.writeHead(201, resHeaderCompiler('application/json'), true);
       res.end(JSON.stringify({
         message: 'Request created successfully.'
       }));
@@ -163,13 +165,9 @@ http.createServer(options, function (req, res) {
 
   // If requesting for the form, then send the form page.
   if (req.url == END_POINTS.devEnv && req.method.toLowerCase() == 'get') {
-    res.writeHead(200, {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE, PUT',
-      'Access-Control-Allow-Headers': 'append,delete,entries,foreach,get,has,keys,set,values,Authorization',
-      'Access-Control-Allow-Credentials': 'true',
-      'content-type': 'text/html'
-    });
+    res.writeHead(200,
+      resHeaderCompiler('text/html', false)
+    );
     //res.end(fs.createReadStream('./form.html'));
     // render the form html
     fs.createReadStream(END_POINTS.formDevEnvPath).pipe(res);
@@ -179,14 +177,10 @@ http.createServer(options, function (req, res) {
 
   // if requesting for the form script
   if (req.url == '/sd-form-script.js' && req.method.toLowerCase() == 'get') {
-    res.writeHead(200, {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE, PUT',
-      'Access-Control-Allow-Headers': 'append,delete,entries,foreach,get,has,keys,set,values,Authorization',
-      'Access-Control-Allow-Credentials': 'true',
-      'content-type': 'text/javascript'
-    });
-    //res.end(fs.createReadStream('./form.html'));
+    res.writeHead(200,
+      resHeaderCompiler('text/javascript', false)
+    );
+    
     // render the form html
     fs.createReadStream(END_POINTS.formScript).pipe(res);
 
@@ -194,13 +188,9 @@ http.createServer(options, function (req, res) {
   }
 
   // else return 400 bad request
-  res.writeHead(404, {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE, PUT',
-    'Access-Control-Allow-Headers': 'append,delete,entries,foreach,get,has,keys,set,values,Authorization',
-    'Access-Control-Allow-Credentials': 'true',
-    'content-type': 'text/html'
-  });
+  res.writeHead(404,
+    resHeaderCompiler('text/html', false)
+  );
   res.end(`<h1>404 Page Not Found.</h1>`);
 
 }).listen(8889, () => console.log('server running on port: 8889'));
