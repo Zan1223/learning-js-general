@@ -1,4 +1,4 @@
-! function () {
+!function () {
   const TXT = {
     email: translator('Email') || 'Email',
     subject: translator('Subject') || 'Subject',
@@ -6,8 +6,8 @@
     submit: translator('Submit') || 'Submit',
     submissionThankYou: translator('submissionThankYou') || 'Thank you for submitting your request. We will confirm your submission shortly.',
     required: translator('required') || 'Required',
-    emailError: translator('emailisnotvaliderror') || 'Invalid Email',
-    htmlTag: translator('noHTMLTagsAllowed') || 'Invalid input: < or > symbol is not allowed',
+    emailisnotvaliderror: translator('emailisnotvaliderror') || 'Invalid Email',
+    noHTMLTagsAllowed: translator('noHTMLTagsAllowed') || 'Invalid input: < or > symbol is not allowed',
     asssetType: translator('invalidAttachmentType') || 'Invalid attachment Type: only image/jpeg and image/png are allowed',
     chooseFiles: translator('chooseFiles') || 'Choose Files',
     noFilesChosen: translator('noFilesChosen') || 'No File Chosen',
@@ -71,7 +71,7 @@
         display: block;
       }
 
-      #sd-form-section {
+      #sd-form-wrapper #sd-form-section {
         background-color: #fff;
         max-width: 600px;
         margin: auto;
@@ -81,7 +81,7 @@
         z-index: 2;
       }
   
-      #sd-drop-shadow {
+      #sd-form-wrapper #sd-drop-shadow {
         background-color: #293e40;
         opacity: 0.8;
         position: fixed;
@@ -91,24 +91,42 @@
         bottom: 0;
         z-index: 1;
       }
-  
+
+      #sd-form-wrapper #sd-res-error {
+        color: #b33233;
+        font-family: "GilroyRegular", -apple-system,
+        BlinkMacSystemFont,
+        Segoe UI,
+        Roboto,
+        Helvetica Neue,
+        Arial,
+        Noto Sans,
+        sans-serif,
+        Apple Color Emoji,
+        Segoe UI Emoji,
+        Segoe UI Symbol,
+        Noto Color Emoji;
+        display: block;
+        margin-bottom: 20px;
+        text-align: left;
+      }
       #sd-form-wrapper * {
         color: #293e40;
       }
       
-      #sd-form {
+      #sd-form-wrapper #sd-form {
         text-align: center;
       }
   
-      #sd-form{
+      #sd-form-wrapper #sd-form{
         display: block
       }
 
-      #sd-thank-you {
+      #sd-form-wrapper #sd-thank-you {
         display: none
       }
   
-      #sd-thank-you p {
+      #sd-form-wrapper #sd-thank-you p {
         font-family: "GilroyRegular", -apple-system,
           BlinkMacSystemFont,
           Segoe UI,
@@ -125,19 +143,19 @@
         line-height: 1.7;
       }
   
-      #sd-form label {
+      #sd-form-wrapper #sd-form label {
         margin-bottom: 8px;
         text-align: left;
       }
   
-      #sd-form label,
-      #sd-form label .sd-form-field {
+      #sd-form-wrapper #sd-form label,
+      #sd-form-wrapper #sd-form label .sd-form-field {
         display: block;
         position: relative;
         width: 100%;
       }
   
-      #sd-form label .sd-form-field {
+      #sd-form-wrapper #sd-form label .sd-form-field {
         border: none;
         box-sizing: border-box;
         font-size: 16px;
@@ -161,7 +179,7 @@
           Noto Color Emoji;
       }
 
-      #sd-form label select.sd-form-field {
+      #sd-form-wrapper #sd-form label select.sd-form-field {
         -webkit-appearance: none;
         background: #f7f7f7;
         background-image: url(https://www.servicenow.com/content/dam/servicenow/images/demo-asset/icon/arrow-down.png);
@@ -186,25 +204,25 @@
         text-align: left;
         width: 100%;
       }
-      #sd-form label select.sd-form-field.field-has-value {
+      #sd-form-wrapper #sd-form label select.sd-form-field.field-has-value {
         font-size: 16px;
         padding-left: 16px;
       }
       
-      #sd-form label:focus, #sd-form label .sd-form-field:focus {
+      #sd-form-wrapper #sd-form label:focus, #sd-form label .sd-form-field:focus {
         outline: none !important;
       }
   
-      #sd-form label .sd-form-field.error-occured {
+      #sd-form-wrapper #sd-form label .sd-form-field.error-occured {
         outline: 1px solid #b33233;
       }
   
-      #sd-form label .sd-form-field:not([type=file]):not(select) {
+      #sd-form-wrapper #sd-form label .sd-form-field:not([type=file]):not(select) {
         background-color: #f7f7f7;
         padding: 20px 20px 0 16px;
       }
   
-      #sd-form label .sd-form-field[type=file] {
+      #sd-form-wrapper #sd-form label .sd-form-field[type=file] {
         cursor: pointer;
         font-size: 14px;
         height: auto;
@@ -214,19 +232,19 @@
         width: 100%;
       }
   
-      #sd-form label textarea.sd-form-field {
+      #sd-form-wrapper #sd-form label textarea.sd-form-field {
         height: 100px;
         resize: none;
       }
   
-      #sd-form label .sd-form-field:focus~.sd-form-label,
-      #sd-form label .sd-form-field.field-has-value~.sd-form-label {
+      #sd-form-wrapper #sd-form label .sd-form-field:focus~.sd-form-label,
+      #sd-form-wrapper #sd-form label .sd-form-field.field-has-value~.sd-form-label {
         font-size: 12px;
         left: 16px;
         top: 8px;
       }
   
-      #sd-form label .sd-form-label {
+      #sd-form-wrapper #sd-form label .sd-form-label {
         font-size: 14px;
         left: 20px;
         line-height: 1.5;
@@ -247,7 +265,7 @@
           Noto Color Emoji;
       }
   
-      #sd-form label .sd-field-error-msg {
+      #sd-form-wrapper #sd-form label .sd-field-error-msg {
         color:#b33233;
         font-family: "GilroyRegular", -apple-system,
           BlinkMacSystemFont,
@@ -264,7 +282,7 @@
         font-size: 10px;
       }
   
-      #sd-form button {
+      #sd-form-wrapper #sd-form button {
         border: 2px solid #293e40;
         cursor: pointer;
         font-family: "GilroySemiBold", -apple-system,
@@ -287,12 +305,12 @@
   
       }
   
-      #sd-form button:hover {
+      #sd-form-wrapper #sd-form button:hover {
         background-color: #293e40;
         color: #fff;
       }
   
-      #sd-overlay-close {
+      #sd-form-wrapper #sd-overlay-close {
         display: inline-block !important;
         padding: 0 15px;
         position: absolute;
@@ -301,20 +319,20 @@
         z-index: 2;
       }
   
-      #sd-overlay-close > svg {
+      #sd-form-wrapper #sd-overlay-close > svg {
         opacity: 0.3;
       }
   
-      #sd-overlay-close > svg g {
+      #sd-form-wrapper #sd-overlay-close > svg g {
         stroke: #293e40;
       }
   
-      #sd-overlay-close:hover > svg{
+      #sd-form-wrapper #sd-overlay-close:hover > svg{
         cursor: pointer;
         opacity: 1;
       }
 
-      #sd-loading-spinner {
+      #sd-form-wrapper #sd-loading-spinner {
         bottom: 0;
         display: none;
         position: absolute;
@@ -323,7 +341,7 @@
         top: 0;
       }
 
-      .sd-spinner-lds-roller {
+      #sd-form-wrapper .sd-spinner-lds-roller {
         -moz-transform: translate(-50%, -50%);
         -ms-transform: translate(-50%, -50%);
         -o-transform: translate(-50%, -50%);
@@ -337,11 +355,11 @@
         width: 85px;
         z-index: 11;
      }
-      .sd-spinner-lds-roller div {
+     #sd-form-wrapper .sd-spinner-lds-roller div {
         animation: sd-spinner-lds-roller 1.2s linear infinite;
         transform-origin: 42px 42px;
      }
-      .sd-spinner-lds-roller div:after, .sd-spinner-lds-roller div::after {
+     #sd-form-wrapper .sd-spinner-lds-roller div:after, #sd-form-wrapper .sd-spinner-lds-roller div::after {
         background: #293e40;
         border-radius: 20%;
         content: " ";
@@ -352,51 +370,51 @@
         top: 3px;
         width: 6px;
      }
-      .sd-spinner-lds-roller div:nth-child(1) {
+     #sd-form-wrapper .sd-spinner-lds-roller div:nth-child(1) {
         animation-delay: -1.1s;
         transform: rotate(0deg);
      }
-      .sd-spinner-lds-roller div:nth-child(2) {
+     #sd-form-wrapper .sd-spinner-lds-roller div:nth-child(2) {
         animation-delay: -1s;
         transform: rotate(30deg);
      }
-      .sd-spinner-lds-roller div:nth-child(3) {
+     #sd-form-wrapper .sd-spinner-lds-roller div:nth-child(3) {
         animation-delay: -0.9s;
         transform: rotate(60deg);
      }
-      .sd-spinner-lds-roller div:nth-child(4) {
+     #sd-form-wrapper .sd-spinner-lds-roller div:nth-child(4) {
         animation-delay: -0.8s;
         transform: rotate(90deg);
      }
-      .sd-spinner-lds-roller div:nth-child(5) {
+     #sd-form-wrapper .sd-spinner-lds-roller div:nth-child(5) {
         animation-delay: -0.7s;
         transform: rotate(120deg);
      }
-      .sd-spinner-lds-roller div:nth-child(6) {
+     #sd-form-wrapper .sd-spinner-lds-roller div:nth-child(6) {
         animation-delay: -0.6s;
         transform: rotate(150deg);
      }
-      .sd-spinner-lds-roller div:nth-child(7) {
+     #sd-form-wrapper .sd-spinner-lds-roller div:nth-child(7) {
         animation-delay: -0.5s;
         transform: rotate(180deg);
      }
-      .sd-spinner-lds-roller div:nth-child(8) {
+     #sd-form-wrapper .sd-spinner-lds-roller div:nth-child(8) {
         animation-delay: -0.4s;
         transform: rotate(210deg);
      }
-      .sd-spinner-lds-roller div:nth-child(9) {
+     #sd-form-wrapper .sd-spinner-lds-roller div:nth-child(9) {
         animation-delay: -0.3s;
         transform: rotate(240deg);
      }
-      .sd-spinner-lds-roller div:nth-child(10) {
+     #sd-form-wrapper .sd-spinner-lds-roller div:nth-child(10) {
         animation-delay: -0.2s;
         transform: rotate(270deg);
      }
-      .sd-spinner-lds-roller div:nth-child(11) {
+     #sd-form-wrapper .sd-spinner-lds-roller div:nth-child(11) {
         animation-delay: -0.1s;
         transform: rotate(300deg);
      }
-      .sd-spinner-lds-roller div:nth-child(12) {
+     #sd-form-wrapper .sd-spinner-lds-roller div:nth-child(12) {
         animation-delay: 0s;
         transform: rotate(330deg);
      }
@@ -410,23 +428,23 @@
      }
       
       @media (min-width: 768px) {
-        #sd-form-section {
+        #sd-form-wrapper #sd-form-section {
           padding: 60px 50px;
           top: 50px;
         }
-        #sd-form label .sd-form-label {
+        #sd-form-wrapper #sd-form label .sd-form-label {
           top: 15px;
         }
-        #sd-overlay-close {
+        #sd-form-wrapper #sd-overlay-close {
           padding: 0 25px;
           top: 25px;
         }
-        #sd-thank-you p {
+        #sd-form-wrapper #sd-thank-you p {
           font-size: 18px;
         }
       }
       @media (min-width: 1024px) {
-        #sd-form label .sd-form-field {
+        #sd-form-wrapper #sd-form label .sd-form-field {
           height: 56px;
         }
       }
@@ -465,6 +483,7 @@
           <input type="file" name="attachment" id="uploadFile" multiple class="sd-form-field"
             accept="image/png, image/jpeg" />
         </label>
+        <span id="sd-res-error"></span>
         <button type="submit" value="submit">${TXT.submit}</button>
       </form>
       <div id="sd-thank-you">
@@ -500,6 +519,7 @@
 
   const sdFormWrapper = document.getElementById('sd-form-wrapper');
   const requestForm = sdFormWrapper.querySelector('#sd-form');
+  const sdErrTag = requestForm.querySelector('#sd-res-error');
   const requiredFields = requestForm.querySelectorAll('.sd-form-field');
   const formCloseBtn = document.querySelector('#sd-form-section #sd-overlay-close');
   const formShadowDrop = sdFormWrapper.querySelector('#sd-drop-shadow');
@@ -518,6 +538,7 @@
 
   function closeOutSdOverlay(fields) {
     sdFormWrapper.classList.remove('sd-form-active');
+    sdErrTag.innerHTML = '';
     if (sdFormWrapper.classList.contains('thank-you-shown')) {
       // only clear out the form data while on thank you view
       Array.prototype.forEach.call(fields, function (field) {
@@ -569,6 +590,9 @@
     let imageOnly = true;
     let validFields = true;
 
+    // remove the error message
+    sdErrTag.innerHTML = '';
+
     Array.prototype.forEach.call(fields, function (field) {
       const fieldValue = field.value;
       // validate the fields
@@ -586,7 +610,7 @@
       // check if the field contains HTML tags
       if (/<|\/>|>/.test(fieldValue)) {
         //  console.log('conntains HTML tag');
-        showErrorMessageSD(field, TXT.htmlTag);
+        showErrorMessageSD(field, TXT.noHTMLTagsAllowed);
         validFields = false;
         return;
       }
@@ -596,7 +620,7 @@
         const patern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         if (!patern.test(fieldValue)) {
           // console.log('invalid email');
-          showErrorMessageSD(field, TXT.emailError);
+          showErrorMessageSD(field, TXT.emailisnotvaliderror);
           validFields = false;
           return;
         }
@@ -647,11 +671,30 @@
 
       if (this.readyState === 4 && this.status !== 201) {
         // Ajax call failed, disable spinner
+        let errMesg = this.responseText;
+
+        try {
+          // if it's a JSON
+          const resObj = JSON.parse(errMesg);
+          try {
+            errMesg = JSON.parse(resObj.message).errorMesg;
+          } catch (err) {
+            errMesg = resObj.message;
+          }
+        } catch (err) {
+          // it's a string
+        }
+
+        sdErrTag.insertAdjacentText('afterbegin', TXT[errMesg] || errMesg );
         sdFormWrapper.classList.remove('sd-form-submitting');
       }
 
     });
-
+    sdRquestXhr.timeout = 5000;
+    sdRquestXhr.ontimeout = function(){
+      sdErrTag.insertAdjacentText('afterbegin', 'oops...System busy, please try again later.' );
+      sdFormWrapper.classList.remove('sd-form-submitting');
+    }
     sdRquestXhr.open("POST", requestForm.getAttribute('action'));
     sdRquestXhr.send(data);
 

@@ -2,7 +2,7 @@ const http = require('https');
 const formidable = require('formidable');
 const fs = require('fs');
 const axios = require('axios');
-const request = require('request');
+const FormData = require('form-data');
 
 const options = {
   key: fs.readFileSync('./server.key'), //this needs to be updated once running on remote server
@@ -39,54 +39,54 @@ function resHeaderCompiler(contextType, xType) {
   return header;
 }
 
-function requestFn(files, ticketInfo, res) {
-  const arr = files.slice(0);
+function postAttachments(files, ticketInfo, res) {
   const {
     sys_class_name,
     sys_id
   } = ticketInfo;
+  const promises = [];
+  const fileLocalPaths = [];
 
-  const oldPath = files[0].path;
-  const newPath = `${oldPath.substr(0,oldPath.lastIndexOf('/'))}/${files[0].name}`;
+  files.forEach(file => {
 
-  // rename the temp file and keep the extension
-  fs.renameSync(oldPath, newPath);
+    const oldPath = file.path;
+    const newPath = `${oldPath.substr(0,oldPath.lastIndexOf('/'))}/${file.name}`;
 
-  const requestOpts = {
-    method: "POST",
-    url: "https://marketingtechnology.service-now.com/api/now/attachment/upload",
-    headers: {
-      "Authorization": AUTH,
-      "Content-Type": "multipart/form-data",
-    },
-    formData: {
-      "table_name": sys_class_name,
-      "table_sys_id": sys_id,
-      "file": fs.createReadStream(newPath)
-    }
-  };
+    // rename the temp file and keep the extension
+    fs.renameSync(oldPath, newPath);
+    // get the form data
+    const form = new FormData();
+    form.append('table_name', sys_class_name);
+    form.append('table_sys_id', sys_id);
+    form.append('file', fs.createReadStream(newPath), file.name);
 
-  request(requestOpts, (error, response, body) => {
-    console.log(`callback from request ====> ${body}`);
-    fs.unlink(newPath, (err) => {
-      if (err) {
-        return console.log('err happend while tmep files being deleted ===>', err);
-      }
-      console.log('temp file deleted to free up memory');
+    const requestOpts = {
+      method: "POST",
+      url: "https://marketingtechnology.service-now.com/api/now/attachment/upload",
+      headers: {
+        "Authorization": AUTH,
+        "Content-Type": form.getHeaders()['content-type'],
+      },
+      data: form
+    };
+
+    promises.push(axios(requestOpts));
+    fileLocalPaths.push(newPath);
+  })
+
+  // await for all the promises to be receipt then execute
+  axios.all(promises).then(response => {
+    // remove the temp files from local server to free up the memory
+    fileLocalPaths.forEach(filePath => {
+      fs.unlink(filePath, err => {
+        err && console.log(`err occured while unlinking the file '${newPath}', error message: ${err}`);
+      })
     })
-    // remove the first item in the array;
-    arr.shift();
-
-    if (!arr.length) {
-      console.log('no more arr so opt out')
-      res.writeHead(201,
-        resHeaderCompiler('application/json', true)
-      );
-      res.end('data received');
-      return;
-    }
-    // if there is item in array, recurse the function
-    requestFn(arr, ticketInfo, res);
+    // response header and close the request
+    res.writeHead(201,
+      resHeaderCompiler('application/json', true)
+    );
+    res.end('assets uploaded');
   })
 }
 
@@ -96,10 +96,33 @@ async function httpRequest(url, data, res) {
   // console.log('data.files ***************************', data.files)
   let uploadedFiles = data.files.attachment;
   uploadedFiles = Array.isArray(uploadedFiles) ? uploadedFiles.map(file => constructArr(file)) : [constructArr(uploadedFiles)];
-
+  //console.log('uplaodedFiles ===>', uploadedFiles);
   try {
-
     // call to create a ticket on Service Desk instance.
+    // BE validate the fields
+    const dataFields = data.fields;
+    // console.log(dataFields);
+    for (let key in dataFields) {
+      const fieldValue = dataFields[key];
+
+      // check if the field contains HTML tags
+      if (/<|\/>|>/.test(fieldValue)) {
+        throw new Error(JSON.stringify({
+          errorMesg: 'noHTMLTagsAllowed',
+          field_value: fieldValue
+        }));
+      }
+      // check if the email field is in right email format
+      if (key === 'u_email') {
+        const patern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if (!patern.test(fieldValue)) {
+          throw new Error(JSON.stringify({
+            errorMesg: 'emailisnotvaliderror',
+            field_value: fieldValue
+          }));
+        }
+      }
+    }
     const midCall = await axios({
       url,
       "method": 'POST',
@@ -108,26 +131,28 @@ async function httpRequest(url, data, res) {
         "Content-Type": "application/json",
         "Authorization": AUTH,
       },
-      "data": JSON.stringify(data.fields),
+      "data": JSON.stringify(dataFields),
+      "timeout": 3000,
     });
-
-    // get ticket sys_id and table name for attaching the images
-    const ticketInfo = midCall.data.result;
-
     // execute if there is attachment
     if (uploadedFiles[0] && uploadedFiles[0].name) {
-
-      requestFn(uploadedFiles, ticketInfo, res)
+      // get ticket sys_id and table name for attaching the images
+      const ticketInfo = midCall.data.result;
+      // post the attchments to the ticket
+      postAttachments(uploadedFiles, ticketInfo, res);
 
     } else {
-      console.log(' no attachment so close the request');
+      // no attachment so close the request
       res.writeHead(201, resHeaderCompiler('application/json'), true);
       res.end(JSON.stringify({
         message: 'Request created successfully.'
       }));
     }
   } catch (err) {
-    console.log(String(err));
+    res.writeHead(400, resHeaderCompiler('application/json'), true);
+    res.end(JSON.stringify({
+      message: err.message
+    }));
   }
 }
 
@@ -139,13 +164,11 @@ http.createServer(options, function (req, res) {
   if (req.url == END_POINTS.postReq && req.method.toLowerCase() == 'post') {
 
     // Instantiate a new formidable form for processing.
-
     var form = new formidable({
       multiples: true
     });
 
     // form.parse analyzes the incoming stream data, picking apart the different fields and files.
-
     form.parse(req, (err, fields, files) => {
       if (err) {
         // Check for and handle any errors here.
@@ -180,7 +203,7 @@ http.createServer(options, function (req, res) {
     res.writeHead(200,
       resHeaderCompiler('text/javascript', false)
     );
-    
+
     // render the form html
     fs.createReadStream(END_POINTS.formScript).pipe(res);
 
