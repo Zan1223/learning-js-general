@@ -51,6 +51,7 @@
         left: 0;
         bottom: 0;
         visibility: hidden;
+        overflow-y: auto;
         z-index: 0;
       }
 
