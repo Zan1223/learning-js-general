@@ -1,31 +1,31 @@
 !function () {
-  const TXT = {
-    email: translator('Email') || 'Email',
-    subject: translator('Subject') || 'Subject',
-    description: translator('Description') || 'Description',
-    submit: translator('Submit') || 'Submit',
-    submissionThankYou: translator('submissionThankYou') || 'Thank you for submitting your request. We will confirm your submission shortly.',
-    required: translator('required') || 'Required',
-    emailisnotvaliderror: translator('emailisnotvaliderror') || 'Invalid Email',
-    noHTMLTagsAllowed: translator('noHTMLTagsAllowed') || 'Invalid input: < or > symbol is not allowed',
-    asssetType: translator('invalidAttachmentType') || 'Invalid attachment Type: only image/jpeg and image/png are allowed',
-    chooseFiles: translator('chooseFiles') || 'Choose Files',
-    noFilesChosen: translator('noFilesChosen') || 'No File Chosen',
+  const SD_TXT = {
+    email: sdTranslator('Email') || 'Email',
+    subject: sdTranslator('Subject') || 'Subject',
+    description: sdTranslator('Description') || 'Description',
+    submit: sdTranslator('Submit') || 'Submit',
+    submissionThankYou: sdTranslator('submissionThankYou') || 'Thank you for submitting your request. We will confirm your submission shortly.',
+    required: sdTranslator('required') || 'Required',
+    emailisnotvaliderror: sdTranslator('emailisnotvaliderror') || 'Invalid Email',
+    noHTMLTagsAllowed: sdTranslator('noHTMLTagsAllowed') || 'Invalid input: < or > symbol is not allowed',
+    asssetType: sdTranslator('invalidAttachmentType') || 'Invalid attachment Type: only image/jpeg and image/png are allowed',
+    chooseFiles: sdTranslator('chooseFiles') || 'Choose Files',
+    noFilesChosen: sdTranslator('noFilesChosen') || 'No File Chosen',
     topicDropdown: {
-      issueType: translator('Issue Type') || 'Issue Type',
-      signIn: translator('Sign In') || 'Sign In',
-      registration: translator('registration') || 'Registration',
-      changeEmail: translator('changeEmail') || 'Change Email',
-      linkAccounts: translator('linkAccounts') || 'Link Accounts',
-      mergeAccounts: translator('mergeAccount') || 'Merge Accounts',
-      eventAgendaSession: translator('eventAgendaSession') || 'Event - Agenda, Session',
-      eventRegistration: translator('eventRegistration') || 'Event - Registration',
-      generalQuestion: translator('generalQuestion') || 'General Question',
-      others: translator('others') || 'Others',
+      issueType: sdTranslator('Issue Type') || 'Issue Type',
+      signIn: sdTranslator('Sign In') || 'Sign In',
+      registration: sdTranslator('registration') || 'Registration',
+      changeEmail: sdTranslator('changeEmail') || 'Change Email',
+      linkAccounts: sdTranslator('linkAccounts') || 'Link Accounts',
+      mergeAccounts: sdTranslator('mergeAccounts') || 'Merge Accounts',
+      eventAgendaSession: sdTranslator('eventAgendaSession') || 'Event - Agenda, Session',
+      eventRegistration: sdTranslator('eventRegistration') || 'Event - Registration',
+      generalQuestion: sdTranslator('generalQuestion') || 'General Question',
+      others: sdTranslator('others') || 'Others',
     }
   }
 
-  function translator(term) {
+  function sdTranslator(term) {
     try {
       return Granite.I18n.get(term);
     } catch (err) {
@@ -41,7 +41,7 @@
     <section id="sd-form-wrapper">
     <style>
       #sd-form-wrapper {
-        height:100%;
+        height: 100vh;
         width: 100%;
         opacity: 0;
         position: absolute;
@@ -89,6 +89,7 @@
         left:0;
         right:0;
         bottom: 0;
+        overflow-y: auto;
         z-index: 1;
       }
 
@@ -114,10 +115,6 @@
         color: #293e40;
       }
       
-      #sd-form-wrapper #sd-form {
-        text-align: center;
-      }
-  
       #sd-form-wrapper #sd-form{
         display: block
       }
@@ -142,10 +139,61 @@
         font-size: 16px;
         line-height: 1.7;
       }
+
+      #sd-form-wrapper #sd-form #sd-attachments-section {
+        font-family: "GilroyRegular", -apple-system,
+          BlinkMacSystemFont,
+          Segoe UI,
+          Roboto,
+          Helvetica Neue,
+          Arial,
+          Noto Sans,
+          sans-serif,
+          Apple Color Emoji,
+          Segoe UI Emoji,
+          Segoe UI Symbol,
+          Noto Color Emoji;
+        font-size: 13px;
+      }
+
+      #sd-form-wrapper #sd-form #sd-attachments-section span{
+        display: block;
+        font-family: inherit;
+        font-size: inherit;
+        padding: 4px 0;
+      }
   
       #sd-form-wrapper #sd-form label {
         margin-bottom: 8px;
         text-align: left;
+      }
+      #sd-form-wrapper #sd-form label#sd-uploadFile-mock {
+        display: inline-block;
+        width: auto;
+      }
+      #sd-form-wrapper #sd-form label#sd-uploadFile-mock div {
+        background-color: #81b5a1;
+        color: #fff;
+        font-family: "GilroyRegular", -apple-system,
+          BlinkMacSystemFont,
+          Segoe UI,
+          Roboto,
+          Helvetica Neue,
+          Arial,
+          Noto Sans,
+          sans-serif,
+          Apple Color Emoji,
+          Segoe UI Emoji,
+          Segoe UI Symbol,
+          Noto Color Emoji;
+        font-size: 16px;
+        padding: 10px 15px;
+        margin-top: 10px;
+      }
+
+      #sd-form-wrapper #sd-form label#sd-uploadFile-mock div:hover {
+        cursor: pointer;
+        opacity: 0.8;
       }
   
       #sd-form-wrapper #sd-form label,
@@ -298,9 +346,12 @@
           Segoe UI Symbol,
           Noto Color Emoji;
         font-size: 18px;
+        left: 50%;
         margin-top: 15px;
         outline: none;
         padding: 15px 40px;
+        position: relative;
+        transform: translateX(-50%);
         transition: .2s ease;
   
       }
@@ -455,39 +506,45 @@
         <input type="hidden" name="contact_type" class="sd-form-field" value="form" />
         <label>
           <input type="email" name="u_email" class="sd-form-field mandatory-field" />
-          <span class="sd-form-label">${TXT.email}</span>
+          <span class="sd-form-label">${SD_TXT.email}</span>
         </label>
         <label>
           <select name="subcategory" class="sd-form-field mandatory-field">
-            <option value selected>-- ${TXT.topicDropdown.issueType} --</option>
-            <option value="sign in">${TXT.topicDropdown.signIn}</option>
-            <option value="registration">${TXT.topicDropdown.registration}</option>
-            <option value="change email">${TXT.topicDropdown.changeEmail}</option>
-            <option value="link accounts">${TXT.topicDropdown.linkAccounts}</option>
-            <option value="merge accounts">${TXT.topicDropdown.mergeAccounts}</option>
-            <option value="event agenda session">${TXT.topicDropdown.eventAgendaSession}</option>
-            <option value="event registration">${TXT.topicDropdown.eventRegistration}</option>
-            <option value="general question">${TXT.topicDropdown.generalQuestion}</option>
-            <option value="others">${TXT.topicDropdown.others}</option>
+            <option value selected>-- ${SD_TXT.topicDropdown.issueType} --</option>
+            <option value="sign in">${SD_TXT.topicDropdown.signIn}</option>
+            <option value="registration">${SD_TXT.topicDropdown.registration}</option>
+            <option value="change email">${SD_TXT.topicDropdown.changeEmail}</option>
+            <option value="link accounts">${SD_TXT.topicDropdown.linkAccounts}</option>
+            <option value="merge accounts">${SD_TXT.topicDropdown.mergeAccounts}</option>
+            <option value="event agenda session">${SD_TXT.topicDropdown.eventAgendaSession}</option>
+            <option value="event registration">${SD_TXT.topicDropdown.eventRegistration}</option>
+            <option value="general question">${SD_TXT.topicDropdown.generalQuestion}</option>
+            <option value="others">${SD_TXT.topicDropdown.others}</option>
           </select>
         </label>
         <label>
           <input type="text" name="short_description" class="sd-form-field mandatory-field" />
-          <span class="sd-form-label">${TXT.subject}</span>
+          <span class="sd-form-label">${SD_TXT.subject}</span>
         </label>
         <label>
           <textarea name="description" class="sd-form-field"></textarea>
-          <span class="sd-form-label">${TXT.description}</span>
+          <span class="sd-form-label">${SD_TXT.description}</span>
         </label>
-        <label>
-          <input type="file" name="attachment" id="uploadFile" multiple class="sd-form-field"
+        <label style="display:none">
+          <input type="file" name="attachment" id="sd-uploadFile" multiple class="sd-form-field"
             accept="image/png, image/jpeg" />
         </label>
+        <label for="sd-uploadFile" id="sd-uploadFile-mock">
+            <div>Choose Files</div>
+        </label>
+        <section id="sd-attachments-section">
+          <span>${SD_TXT.noFilesChosen}</span>
+        </section>
         <span id="sd-res-error"></span>
-        <button type="submit" value="submit">${TXT.submit}</button>
+        <button type="submit" value="submit">${SD_TXT.submit}</button>
       </form>
       <div id="sd-thank-you">
-        <p>${TXT.submissionThankYou}</p>
+        <p>${SD_TXT.submissionThankYou}</p>
       </div>
       <aside id="sd-overlay-close">
         <svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <desc>Created with Sketch.</desc> <defs></defs> <g id="Breakpoints" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"> <g id="1700_FulidGrid-Copy" transform="translate(-1603.000000, -68.000000)" stroke="#FFFFFF" stroke-width="2"> <g id="Name-Block" transform="translate(850.000000, 0.000000)"> <g id="Group-3" transform="translate(639.000000, 61.000000)"> <g id="Desktop/3.About_Us-Leadership-Bio/Module_01/Icon/icon_x_desktop-Copy" transform="translate(121.727922, 14.727922) rotate(-315.000000) translate(-121.727922, -14.727922) translate(111.727922, 4.727922)"> <path d="M19.4117647,10 L0.588235294,10" id="Line"></path> <path d="M10,19.4117647 L10,0.588235294" id="Line-Copy"></path> </g> </g> </g> </g> </g></svg>
@@ -519,6 +576,8 @@
 
   const sdFormWrapper = document.getElementById('sd-form-wrapper');
   const requestForm = sdFormWrapper.querySelector('#sd-form');
+  const uploadFileBtn = requestForm.querySelector('#sd-uploadFile');
+  const attachmentSection = requestForm.querySelector('#sd-attachments-section');
   const sdErrTag = requestForm.querySelector('#sd-res-error');
   const requiredFields = requestForm.querySelectorAll('.sd-form-field');
   const formCloseBtn = document.querySelector('#sd-form-section #sd-overlay-close');
@@ -548,6 +607,9 @@
           hideErrorMessageSD(field);
         }
       });
+      // reset the attachment Section
+      attachmentSection.innerHTML = `<span>${SD_TXT.noFilesChosen}</span>`;
+
       setTimeout(function () {
         sdFormWrapper.classList.remove('thank-you-shown');
       }, 250)
@@ -571,6 +633,26 @@
       sdFormWrapper.classList.add('sd-form-active')
     }
   })
+  // attachment updates
+
+  uploadFileBtn.addEventListener('change', function(e){
+    attachmentSection.innerHTML = "";
+    const uploadedFiles = e.target.files;
+    // console.log(uploadedFiles.length);
+    if(uploadedFiles.length){
+      for(let key in uploadedFiles){
+        // only get the properties with uploaded file details
+        if(Number(key) || Number(key) === 0){
+          attachmentSection.insertAdjacentHTML('beforeend', `<span>${uploadedFiles[key].name}</span>`)
+        }
+      }
+    }else{
+      // no file uploaded / selected
+      attachmentSection.insertAdjacentHTML('beforeend', `<span>${SD_TXT.noFilesChosen}</span>`)
+    }
+ 
+  })
+
   // close the overlay while clicking on the close button
   formCloseBtn.addEventListener('click', function (e) {
     clearTimeout(closeOverlayCounter);
@@ -603,14 +685,14 @@
       if (field.classList.contains('mandatory-field') && !fieldValue) {
         // console.log('empty value for mandatory field');
         validFields = false;
-        showErrorMessageSD(field, TXT.required);
+        showErrorMessageSD(field, SD_TXT.required);
         return;
       }
 
       // check if the field contains HTML tags
       if (/<|\/>|>/.test(fieldValue)) {
         //  console.log('conntains HTML tag');
-        showErrorMessageSD(field, TXT.noHTMLTagsAllowed);
+        showErrorMessageSD(field, SD_TXT.noHTMLTagsAllowed);
         validFields = false;
         return;
       }
@@ -620,7 +702,7 @@
         const patern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         if (!patern.test(fieldValue)) {
           // console.log('invalid email');
-          showErrorMessageSD(field, TXT.emailisnotvaliderror);
+          showErrorMessageSD(field, SD_TXT.emailisnotvaliderror);
           validFields = false;
           return;
         }
@@ -635,7 +717,7 @@
             // jump out of the execution if there is a non-image uploaded
             if (key < attachments.length) {
               if (!RegExp('image\/png|image\/jpeg').test(attachments[key].type)) {
-                showErrorMessageSD(field, TXT.asssetType);
+                showErrorMessageSD(field, SD_TXT.asssetType);
                 imageOnly = false;
                 return;
               };

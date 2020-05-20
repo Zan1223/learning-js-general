@@ -49,16 +49,13 @@ function postAttachments(files, ticketInfo, res) {
 
   files.forEach(file => {
 
-    const oldPath = file.path;
-    const newPath = `${oldPath.substr(0,oldPath.lastIndexOf('/'))}/${file.name}`;
-
-    // rename the temp file and keep the extension
-    fs.renameSync(oldPath, newPath);
+    const filePath = file.path;
+    // const newPath = `${filePath.substr(0,filePath.lastIndexOf('/'))}/${file.name}`;
     // get the form data
     const form = new FormData();
     form.append('table_name', sys_class_name);
     form.append('table_sys_id', sys_id);
-    form.append('file', fs.createReadStream(newPath), file.name);
+    form.append('file', fs.createReadStream(filePath), file.name);
 
     const requestOpts = {
       method: "POST",
@@ -71,7 +68,7 @@ function postAttachments(files, ticketInfo, res) {
     };
 
     promises.push(axios(requestOpts));
-    fileLocalPaths.push(newPath);
+    fileLocalPaths.push(filePath);
   })
 
   // await for all the promises to be receipt then execute
@@ -79,7 +76,7 @@ function postAttachments(files, ticketInfo, res) {
     // remove the temp files from local server to free up the memory
     fileLocalPaths.forEach(filePath => {
       fs.unlink(filePath, err => {
-        err && console.log(`err occured while unlinking the file '${newPath}', error message: ${err}`);
+        err && console.log(`err occured while unlinking the file '${filePath}', error message: ${err}`);
       })
     })
     // response header and close the request
