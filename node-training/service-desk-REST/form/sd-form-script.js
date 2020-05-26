@@ -11,9 +11,12 @@
     asssetType: sdTranslator('invalidAttachmentType') || 'Invalid attachment Type: only image/jpeg and image/png are allowed',
     chooseFiles: sdTranslator('chooseFiles') || 'Choose Files',
     noFilesChosen: sdTranslator('noFilesChosen') || 'No File Chosen',
+    fileSizeExceeded: sdTranslator('Total file size must not exceed 25 MB') || 'Total file size must not exceed 25 MB',
     topicDropdown: {
       issueType: sdTranslator('Issue Type') || 'Issue Type',
       signIn: sdTranslator('Sign In') || 'Sign In',
+      forgotPwd: sdTranslator('Forgot Password') || 'Forgot Password',
+      validateAccount: sdTranslator('Validate Account') || 'Validate Account',
       registration: sdTranslator('registration') || 'Registration',
       changeEmail: sdTranslator('changeEmail') || 'Change Email',
       linkAccounts: sdTranslator('linkAccounts') || 'Link Accounts',
@@ -24,6 +27,8 @@
       others: sdTranslator('others') || 'Others',
     }
   }
+  // file size limit set to 25 MB
+  const FILE_SIZE_LIMIT = 25000000;
 
   function sdTranslator(term) {
     try {
@@ -110,6 +115,7 @@
         Noto Color Emoji;
         display: block;
         margin-bottom: 20px;
+        margin-top: 20px;
         text-align: left;
       }
       #sd-form-wrapper * {
@@ -314,8 +320,9 @@
           Noto Color Emoji;
       }
   
-      #sd-form-wrapper #sd-form label .sd-field-error-msg {
+      #sd-form-wrapper #sd-form label .sd-field-error-msg, #sd-form-wrapper #sd-form label+.sd-field-error-msg {
         color:#b33233;
+        display: block;
         font-family: "GilroyRegular", -apple-system,
           BlinkMacSystemFont,
           Segoe UI,
@@ -328,7 +335,7 @@
           Segoe UI Emoji,
           Segoe UI Symbol,
           Noto Color Emoji;
-        font-size: 10px;
+        font-size: 11px;
       }
   
       #sd-form-wrapper #sd-form button {
@@ -505,6 +512,7 @@
       <form action="${actionPath}" id="sd-form">
         <input type="hidden" name="caller_id" class="sd-form-field" value="Guest" />
         <input type="hidden" name="contact_type" class="sd-form-field" value="form" />
+        <input type="hidden" name="u_source_url" class="sd-form-field" value="${window.location.href}" />
         <label>
           <input type="email" name="u_email" class="sd-form-field mandatory-field" />
           <span class="sd-form-label">${SD_TXT.email}</span>
@@ -513,7 +521,9 @@
           <select name="subcategory" class="sd-form-field mandatory-field">
             <option value selected>-- ${SD_TXT.topicDropdown.issueType} --</option>
             <option value="sign in">${SD_TXT.topicDropdown.signIn}</option>
+            <option value="forgot password">${SD_TXT.topicDropdown.forgotPwd}</option>
             <option value="registration">${SD_TXT.topicDropdown.registration}</option>
+            <option value="validate account">${SD_TXT.topicDropdown.validateAccount}</option>
             <option value="change email">${SD_TXT.topicDropdown.changeEmail}</option>
             <option value="link accounts">${SD_TXT.topicDropdown.linkAccounts}</option>
             <option value="merge accounts">${SD_TXT.topicDropdown.mergeAccounts}</option>
@@ -532,12 +542,13 @@
           <span class="sd-form-label">${SD_TXT.description}</span>
         </label>
         <label style="display:none">
-          <input type="file" name="attachment" id="sd-uploadFile" multiple class="sd-form-field"
-            accept="image/png, image/jpeg" />
+          <input type="file" name="attachment" id="sd-uploadFile" multiple class="sd-form-field" accept="image/png, image/jpeg"/>
         </label>
-        <label for="sd-uploadFile" id="sd-uploadFile-mock">
-            <div>Choose Files</div>
-        </label>
+        <div id="sd-uploadFile-mock-wrapper">
+          <label for="sd-uploadFile" id="sd-uploadFile-mock">
+              <div>Choose Files</div>
+          </label>
+        </div>
         <section id="sd-attachments-section">
           <span>${SD_TXT.noFilesChosen}</span>
         </section>
@@ -578,6 +589,7 @@
   const sdFormWrapper = document.getElementById('sd-form-wrapper');
   const requestForm = sdFormWrapper.querySelector('#sd-form');
   const uploadFileBtn = requestForm.querySelector('#sd-uploadFile');
+  const mockUploadFileBtn = requestForm.querySelector('#sd-uploadFile-mock');
   const attachmentSection = requestForm.querySelector('#sd-attachments-section');
   const sdErrTag = requestForm.querySelector('#sd-res-error');
   const requiredFields = requestForm.querySelectorAll('.sd-form-field');
@@ -636,22 +648,22 @@
   })
   // attachment updates
 
-  uploadFileBtn.addEventListener('change', function(e){
+  uploadFileBtn.addEventListener('change', function (e) {
     attachmentSection.innerHTML = "";
     const uploadedFiles = e.target.files;
-    // console.log(uploadedFiles.length);
-    if(uploadedFiles.length){
-      for(let key in uploadedFiles){
+    if (uploadedFiles.length) {
+      for (let key in uploadedFiles) {
         // only get the properties with uploaded file details
-        if(Number(key) || Number(key) === 0){
-          attachmentSection.insertAdjacentHTML('beforeend', `<span>${uploadedFiles[key].name}</span>`)
+        if (key < uploadedFiles.length) {
+          attachmentSection.insertAdjacentHTML('beforeend', `<span>${uploadedFiles[key].name}</span>`);
         }
       }
-    }else{
+
+    } else {
       // no file uploaded / selected
       attachmentSection.insertAdjacentHTML('beforeend', `<span>${SD_TXT.noFilesChosen}</span>`)
     }
- 
+
   })
 
   // close the overlay while clicking on the close button
@@ -670,8 +682,8 @@
     const fields = requestForm.querySelectorAll('.sd-form-field');
 
     const data = new FormData();
-    let imageOnly = true;
     let validFields = true;
+    let totalFileSize = 0;
 
     // remove the error message
     sdErrTag.innerHTML = '';
@@ -681,10 +693,9 @@
       // validate the fields
       // remove the error message at the begining
       hideErrorMessageSD(field);
-
+      hideErrorMessageSD(mockUploadFileBtn);
       // check if the field is empty
       if (field.classList.contains('mandatory-field') && !fieldValue) {
-        // console.log('empty value for mandatory field');
         validFields = false;
         showErrorMessageSD(field, SD_TXT.required);
         return;
@@ -692,7 +703,6 @@
 
       // check if the field contains HTML tags
       if (/<|\/>|>/.test(fieldValue)) {
-        //  console.log('conntains HTML tag');
         showErrorMessageSD(field, SD_TXT.noHTMLTagsAllowed);
         validFields = false;
         return;
@@ -702,36 +712,49 @@
       if (field.type === 'email') {
         const patern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         if (!patern.test(fieldValue)) {
-          // console.log('invalid email');
           showErrorMessageSD(field, SD_TXT.emailisnotvaliderror);
           validFields = false;
           return;
         }
       }
 
+
       if (field.type === 'file') {
         const attachments = field.files;
-        // console.log('attachments ====>', attachments.length);
-        // data.append(field.name, attachments[0], "da9f9a989d11a082aef0560dc26198c9.jpg" )
         if (attachments.length) {
           for (let key in attachments) {
-            // jump out of the execution if there is a non-image uploaded
+            // jump out of the execution if there is a non image uploaded
             if (key < attachments.length) {
               if (!RegExp('image\/png|image\/jpeg').test(attachments[key].type)) {
-                showErrorMessageSD(field, SD_TXT.asssetType);
-                imageOnly = false;
+                showErrorMessageSD(mockUploadFileBtn, SD_TXT.asssetType);
+                validFields = false;
                 return;
-              };
+              }
+              // hideErrorMessageSD(mockUploadFileBtn);
+
+              totalFileSize += attachments[key].size;
+
               data.append(field.name, attachments[key], attachments[key].name);
             }
           }
+
+          if (totalFileSize >= FILE_SIZE_LIMIT) {
+            showErrorMessageSD(mockUploadFileBtn, SD_TXT.fileSizeExceeded);
+            validFields = false;
+            return
+          }
+
+        } else {
+          // no attachment so remove the error message if there is any
+          hideErrorMessageSD(mockUploadFileBtn, SD_TXT.asssetType);
         }
       } else {
+        // append other field values to the data object except file type
         data.append(field.name, field.value);
       }
     })
 
-    if (!(imageOnly && validFields)) {
+    if (!validFields) {
       return;
     };
 
@@ -768,14 +791,14 @@
           // it's a string
         }
 
-        sdErrTag.insertAdjacentText('afterbegin', TXT[errMesg] || errMesg );
+        sdErrTag.insertAdjacentText('afterbegin', SD_TXT[errMesg] || errMesg);
         sdFormWrapper.classList.remove('sd-form-submitting');
       }
 
     });
-    sdRquestXhr.timeout = 5000;
-    sdRquestXhr.ontimeout = function(){
-      sdErrTag.insertAdjacentText('afterbegin', 'oops...System busy, please try again later.' );
+    sdRquestXhr.timeout = 10000;
+    sdRquestXhr.ontimeout = function () {
+      sdErrTag.insertAdjacentText('afterbegin', 'oops...System busy, please try again later.');
       sdFormWrapper.classList.remove('sd-form-submitting');
     }
     sdRquestXhr.open("POST", requestForm.getAttribute('action'));

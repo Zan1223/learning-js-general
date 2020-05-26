@@ -17,19 +17,37 @@ const END_POINTS = {
   formScript: './form/sd-form-script.js',
 }
 
+const FILE_SIZE_LIMIT = 25000000;
+
 const AUTH = `Basic ${Buffer.from('martech.servicedesk'+':'+'Test@123').toString('base64')}`;
+
+const ORIGIN_ALLOWED = ['https://www.servicenow.com', 'https://stage-www.servicenow.com', 'https://qa-www.servicenow.com', 'https://knowledge.servicenow.com', 'https://stage-knowledge.servicenow.com'];
 
 function constructArr(a) {
   if (!a) return null;
   return {
     'name': a.name,
-    'path': a.path
+    'path': a.path,
+    'size': a.size,
+    'type': a.type,
   }
 }
 
-function resHeaderCompiler(contextType, xType) {
+function lookUpAllowedOrigin(requestHeaders) {
+  // return the request origin/ hostname if there is a match
+  for (let i = 0; i < ORIGIN_ALLOWED.length; i++) {
+    if (ORIGIN_ALLOWED[i].indexOf(requestHeaders.host) > -1 || ORIGIN_ALLOWED[i].indexOf(requestHeaders.origin) > -1) {
+      return ORIGIN_ALLOWED[i];
+    }
+  }
+  // return the first item in array if no match
+  return ORIGIN_ALLOWED[0];
+}
+
+function resHeaderCompiler(contextType, requestHeaders, xType) {
+  const allowedOrigin = lookUpAllowedOrigin(requestHeaders);
   const header = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE, PUT',
     'Context-Type': contextType,
   }
@@ -39,7 +57,7 @@ function resHeaderCompiler(contextType, xType) {
   return header;
 }
 
-function postAttachments(files, ticketInfo, res) {
+function postAttachments(files, ticketInfo, requestHeaders, res) {
   const {
     sys_class_name,
     sys_id
@@ -50,6 +68,7 @@ function postAttachments(files, ticketInfo, res) {
   files.forEach(file => {
 
     const filePath = file.path;
+
     // const newPath = `${filePath.substr(0,filePath.lastIndexOf('/'))}/${file.name}`;
     // get the form data
     const form = new FormData();
@@ -69,8 +88,8 @@ function postAttachments(files, ticketInfo, res) {
 
     promises.push(axios(requestOpts));
     fileLocalPaths.push(filePath);
-  })
 
+  })
   // await for all the promises to be receipt then execute
   axios.all(promises).then(response => {
     // remove the temp files from local server to free up the memory
@@ -81,18 +100,20 @@ function postAttachments(files, ticketInfo, res) {
     })
     // response header and close the request
     res.writeHead(201,
-      resHeaderCompiler('application/json', true)
+      resHeaderCompiler('application/json', requestHeaders, true)
     );
     res.end('assets uploaded');
   })
 }
 
 
-async function httpRequest(url, data, res) {
+async function httpRequest(url, data, requestHeaders, res) {
 
   // console.log('data.files ***************************', data.files)
   let uploadedFiles = data.files.attachment;
+  // console.log('before uploadedFiles ==>', uploadedFiles)
   uploadedFiles = Array.isArray(uploadedFiles) ? uploadedFiles.map(file => constructArr(file)) : [constructArr(uploadedFiles)];
+  let totalFileSize = 0;
   //console.log('uplaodedFiles ===>', uploadedFiles);
   try {
     // call to create a ticket on Service Desk instance.
@@ -119,7 +140,31 @@ async function httpRequest(url, data, res) {
           }));
         }
       }
+
     }
+    // validate the attachment 
+    if (uploadedFiles[0] && uploadedFiles[0].name) {
+      uploadedFiles.forEach(file => {
+        // check for the right file type
+        const patern = /image\/jpeg|image\/png/;
+        if (!patern.test(file.type)) {
+          throw new Error(JSON.stringify({
+            errorMesg: 'asssetType',
+            field_value: null
+          }));
+        }
+        totalFileSize += file.size;
+
+      })
+      // check for the total size
+      if (totalFileSize >= FILE_SIZE_LIMIT) {
+        throw new Error(JSON.stringify({
+          errorMesg: 'fileSizeExceeded',
+          field_value: null
+        }));
+      }
+    }
+
     const midCall = await axios({
       url,
       "method": 'POST',
@@ -131,22 +176,24 @@ async function httpRequest(url, data, res) {
       "data": JSON.stringify(dataFields),
       "timeout": 3000,
     });
+    // console.log(uploadedFiles)
     // execute if there is attachment
+    // console.log('midCall.data.result ==>', midCall.data.result);
     if (uploadedFiles[0] && uploadedFiles[0].name) {
       // get ticket sys_id and table name for attaching the images
       const ticketInfo = midCall.data.result;
       // post the attchments to the ticket
-      postAttachments(uploadedFiles, ticketInfo, res);
+      postAttachments(uploadedFiles, ticketInfo, requestHeaders, res);
 
     } else {
       // no attachment so close the request
-      res.writeHead(201, resHeaderCompiler('application/json'), true);
+      res.writeHead(201, resHeaderCompiler('application/json', requestHeaders, true));
       res.end(JSON.stringify({
         message: 'Request created successfully.'
       }));
     }
   } catch (err) {
-    res.writeHead(400, resHeaderCompiler('application/json'), true);
+    res.writeHead(400, resHeaderCompiler('application/json', requestHeaders, true));
     res.end(JSON.stringify({
       message: err.message
     }));
@@ -155,9 +202,8 @@ async function httpRequest(url, data, res) {
 
 
 http.createServer(options, function (req, res) {
-
+  const requestHeaders = req.headers;
   // This if statement is here to catch form submissions, and initiate multipart form data parsing.
-
   if (req.url == END_POINTS.postReq && req.method.toLowerCase() == 'post') {
 
     // Instantiate a new formidable form for processing.
@@ -172,12 +218,12 @@ http.createServer(options, function (req, res) {
         console.error(err.message);
         return;
       }
-
+      // console.log('req 123===>', req.headers.host);
       // This last line responds to the form submission with a list of the parsed data and files.
       httpRequest(API_PATH, {
         fields,
         files
-      }, res)
+      }, requestHeaders, res)
       // res.end();
     });
     return;
@@ -186,7 +232,7 @@ http.createServer(options, function (req, res) {
   // If requesting for the form, then send the form page.
   if (req.url == END_POINTS.devEnv && req.method.toLowerCase() == 'get') {
     res.writeHead(200,
-      resHeaderCompiler('text/html', false)
+      resHeaderCompiler('text/html', requestHeaders, false)
     );
     //res.end(fs.createReadStream('./form.html'));
     // render the form html
@@ -198,7 +244,7 @@ http.createServer(options, function (req, res) {
   // if requesting for the form script
   if (req.url == '/sd-form-script.js' && req.method.toLowerCase() == 'get') {
     res.writeHead(200,
-      resHeaderCompiler('text/javascript', false)
+      resHeaderCompiler('text/javascript', requestHeaders, false)
     );
 
     // render the form html
@@ -209,7 +255,7 @@ http.createServer(options, function (req, res) {
 
   // else return 400 bad request
   res.writeHead(404,
-    resHeaderCompiler('text/html', false)
+    resHeaderCompiler('text/html', requestHeaders, false)
   );
   res.end(`<h1>404 Page Not Found.</h1>`);
 
