@@ -9,9 +9,10 @@
     emailisnotvaliderror: sdTranslator('emailisnotvaliderror') || 'Invalid Email',
     noHTMLTagsAllowed: sdTranslator('noHTMLTagsAllowed') || 'Invalid input: < or > symbol is not allowed',
     asssetType: sdTranslator('invalidAttachmentType') || 'Invalid attachment Type: only image/jpeg and image/png are allowed',
-    chooseFiles: sdTranslator('chooseFiles') || 'Choose Files',
-    noFilesChosen: sdTranslator('noFilesChosen') || 'No File Chosen',
-    fileSizeExceeded: sdTranslator('Total file size must not exceed 25 MB') || 'Total file size must not exceed 25 MB',
+    attachmentLabel: sdTranslator('Please attach supporting screenshots if applicable') || 'Please attach supporting screenshots if applicable',
+    chooseFiles: sdTranslator('chooseFiles') || 'Choose Attachments',
+    noFilesChosen: sdTranslator('noFilesChosen') || 'No Attachment Chosen',
+    fileSizeExceeded: sdTranslator('Total file size must not exceed 15 MB') || 'Total file size must not exceed 15 MB',
     topicDropdown: {
       issueType: sdTranslator('Issue Type') || 'Issue Type',
       signIn: sdTranslator('Sign In') || 'Sign In',
@@ -27,8 +28,8 @@
       others: sdTranslator('others') || 'Others',
     }
   }
-  // file size limit set to 25 MB
-  const FILE_SIZE_LIMIT = 25000000;
+  // file size limit set to 15 MB
+  const FILE_SIZE_LIMIT = 15000000;
 
   function sdTranslator(term) {
     try {
@@ -174,6 +175,25 @@
         margin-bottom: 8px;
         text-align: left;
       }
+
+      #sd-form-wrapper #sd-form #sd-uploadFile__attachment_label {
+        font-family: "GilroyRegular", -apple-system,
+          BlinkMacSystemFont,
+          Segoe UI,
+          Roboto,
+          Helvetica Neue,
+          Arial,
+          Noto Sans,
+          sans-serif,
+          Apple Color Emoji,
+          Segoe UI Emoji,
+          Segoe UI Symbol,
+          Noto Color Emoji;
+        font-size: 16px;
+        font-weight: normal;
+        margin: 20px 0 0 0;
+      }
+
       #sd-form-wrapper #sd-form label#sd-uploadFile-mock {
         display: inline-block;
         width: auto;
@@ -339,6 +359,7 @@
       }
   
       #sd-form-wrapper #sd-form button {
+        background-color: #fff;
         border: 2px solid #293e40;
         cursor: pointer;
         font-family: "GilroySemiBold", -apple-system,
@@ -545,8 +566,9 @@
           <input type="file" name="attachment" id="sd-uploadFile" multiple class="sd-form-field" accept="image/png, image/jpeg"/>
         </label>
         <div id="sd-uploadFile-mock-wrapper">
+          <h3 id="sd-uploadFile__attachment_label">${SD_TXT.attachmentLabel}.</h3>
           <label for="sd-uploadFile" id="sd-uploadFile-mock">
-              <div>Choose Files</div>
+              <div>${SD_TXT.chooseFiles}</div>
           </label>
         </div>
         <section id="sd-attachments-section">

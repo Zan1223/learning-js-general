@@ -17,7 +17,7 @@ const END_POINTS = {
   formScript: './form/sd-form-script.js',
 }
 
-const FILE_SIZE_LIMIT = 25000000;
+const FILE_SIZE_LIMIT = 15000000;
 
 const AUTH = `Basic ${Buffer.from('martech.servicedesk'+':'+'Test@123').toString('base64')}`;
 
