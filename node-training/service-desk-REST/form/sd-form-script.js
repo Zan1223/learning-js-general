@@ -288,10 +288,10 @@
         outline: none !important;
       }
   
-      #sd-form-wrapper #sd-form label .sd-form-field.error-occured {
+      #sd-form-wrapper #sd-form label .sd-form-field.error-occured, #sd-form-wrapper #sd-form #sdRecaptcha.sd-form-field.error-occured > div {
         outline: 1px solid #b33233;
       }
-  
+
       #sd-form-wrapper #sd-form label .sd-form-field:not([type=file]):not(select) {
         background-color: #f7f7f7;
         padding: 20px 20px 0 16px;
@@ -340,7 +340,7 @@
           Noto Color Emoji;
       }
   
-      #sd-form-wrapper #sd-form label .sd-field-error-msg, #sd-form-wrapper #sd-form label+.sd-field-error-msg {
+      #sd-form-wrapper #sd-form .sd-field-error-msg, #sd-form-wrapper #sd-form label+.sd-field-error-msg {
         color:#b33233;
         display: block;
         font-family: "GilroyRegular", -apple-system,
@@ -506,6 +506,10 @@
           opacity: 0;
        }
      }
+
+     #sd-form-wrapper #sd-recaptcha-container {
+      margin-top: 20px; 
+     }
       
       @media (min-width: 768px) {
         #sd-form-wrapper #sd-form-section {
@@ -574,6 +578,11 @@
         <section id="sd-attachments-section">
           <span>${SD_TXT.noFilesChosen}</span>
         </section>
+
+        <section id="sd-recaptcha-container">
+          <div id="sdRecaptcha" class="g-recaptcha sd-form-field" data-sitekey="6Lc4XHAUAAAAABSFGSTYQheacoJo5S5BgOyExoE7"></div>
+        </section>
+
         <span id="sd-res-error"></span>
         <button type="submit" value="submit">${SD_TXT.submit}</button>
       </form>
@@ -606,8 +615,35 @@
   </section>`)
   }
 
+  function sdRecaptchaSrc() {
+    const htmlTag = document.querySelector('html');
+    const langRecap = htmlTag.getAttribute('hreflang') || htmlTag.getAttribute('lang');
+    return 'https://www.google.com/recaptcha/api.js?render=explicit&hl=' + (langRecap ? langRecap : 'en-US');
+  }
+
+  function sdRecaptchaScriptTag(){
+    var recaptchaScriptTag = document.createElement('script');
+    recaptchaScriptTag.type = 'text/javascript';
+    recaptchaScriptTag.src = sdRecaptchaSrc();
+    return recaptchaScriptTag;
+  }
+
+  function sdWidgetRender(id, callback, errCallback){
+    return grecaptcha.render(id, {
+      'sitekey': '6Lc4XHAUAAAAABSFGSTYQheacoJo5S5BgOyExoE7',
+      'callback': callback,
+      'error-callback': errCallback,
+      'expired-callback': errCallback
+    });
+  }
+
   document.body.insertAdjacentHTML('beforeend', renderHTML());
 
+  if(!document.querySelector('script[src^="https://www.google.com/recaptcha/api.js"]')){
+    // only execute this when there is no recaptcha script on the page yet
+    document.head.append(sdRecaptchaScriptTag());
+  }
+ 
   const sdFormWrapper = document.getElementById('sd-form-wrapper');
   const requestForm = sdFormWrapper.querySelector('#sd-form');
   const uploadFileBtn = requestForm.querySelector('#sd-uploadFile');
@@ -617,7 +653,9 @@
   const requiredFields = requestForm.querySelectorAll('.sd-form-field');
   const formCloseBtn = document.querySelector('#sd-form-section #sd-overlay-close');
   const formShadowDrop = sdFormWrapper.querySelector('#sd-drop-shadow');
+  const sdRecaptchaEle = requestForm.querySelector('#sdRecaptcha');
   let closeOverlayCounter = null;
+  let sdRecaptchaWidget = null;
 
 
   function showErrorMessageSD(field, errorMsg) {
@@ -634,6 +672,7 @@
     sdFormWrapper.classList.remove('sd-form-active');
     sdErrTag.innerHTML = '';
     if (sdFormWrapper.classList.contains('thank-you-shown')) {
+      grecaptcha.reset(sdRecaptchaWidget); // reset the recaptcha
       // only clear out the form data while on thank you view
       Array.prototype.forEach.call(fields, function (field) {
         if (field.type !== 'hidden') {
@@ -665,7 +704,19 @@
 
   window.addEventListener('click', function (e) {
     if (e.target.classList.contains('sd-form-trigger')) {
-      sdFormWrapper.classList.add('sd-form-active')
+      sdFormWrapper.classList.add('sd-form-active');
+      // load recaptcha
+      if(!sdRecaptchaEle.classList.contains('sd-recaptcha-loaded')){
+        sdRecaptchaWidget = sdWidgetRender('sdRecaptcha',
+        function success(e){
+          hideErrorMessageSD(sdRecaptchaEle)
+        }, 
+        function error(err){
+          showErrorMessageSD(sdRecaptchaEle, SD_TXT.required)
+        });
+        // add the flag
+        sdRecaptchaEle.classList.add('sd-recaptcha-loaded');
+      }
     }
   })
   // attachment updates
@@ -715,9 +766,8 @@
       // validate the fields
       // remove the error message at the begining
       hideErrorMessageSD(field);
-      hideErrorMessageSD(mockUploadFileBtn);
-      // check if the field is empty
-      if (field.classList.contains('mandatory-field') && !fieldValue) {
+      // check if the field is empty or run recaptcha check
+      if ((field.classList.contains('mandatory-field') && !fieldValue) || (field.id === 'sdRecaptcha' && !grecaptcha.getResponse(sdRecaptchaWidget))) {
         validFields = false;
         showErrorMessageSD(field, SD_TXT.required);
         return;
@@ -740,8 +790,8 @@
         }
       }
 
-
       if (field.type === 'file') {
+        hideErrorMessageSD(mockUploadFileBtn);
         const attachments = field.files;
         if (attachments.length) {
           for (let key in attachments) {
