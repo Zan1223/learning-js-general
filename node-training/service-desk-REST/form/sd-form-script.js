@@ -1,4 +1,4 @@
-!function () {
+! function () {
   const SD_TXT = {
     email: sdTranslator('Email') || 'Email',
     subject: sdTranslator('Subject') || 'Subject',
@@ -13,6 +13,7 @@
     chooseFiles: sdTranslator('chooseFiles') || 'Choose Attachments',
     noFilesChosen: sdTranslator('noFilesChosen') || 'No Attachment Chosen',
     fileSizeExceeded: sdTranslator('Total file size must not exceed 15 MB') || 'Total file size must not exceed 15 MB',
+    issueOriginTitle: sdTranslator('Where did you encounter the problem') || 'Where did you encounter the problem',
     topicDropdown: {
       issueType: sdTranslator('Issue Type') || 'Issue Type',
       signIn: sdTranslator('Sign In') || 'Sign In',
@@ -357,7 +358,52 @@
           Noto Color Emoji;
         font-size: 11px;
       }
-  
+
+      #sd-form-wrapper ul#sn-issue-origin-sec {
+        display: flex;
+        padding-left: 0;
+        margin: 0 0 8px 0;
+        font-family: "GilroyRegular", -apple-system,
+          BlinkMacSystemFont,
+          Segoe UI,
+          Roboto,
+          Helvetica Neue,
+          Arial,
+          Noto Sans,
+          sans-serif,
+          Apple Color Emoji,
+          Segoe UI Emoji,
+          Segoe UI Symbol,
+          Noto Color Emoji;
+      }
+
+      #sd-form-wrapper ul#sn-issue-origin-sec li{
+        border: 2px solid #293e40;
+        backgrounc-color: #fff;
+        color: #293e40;
+        cursor: pointer;
+        list-style: none;
+        text-align: center;
+        padding: 10px;
+        margin-right: 10px;
+        width: 20%;
+        transition: all .25s;
+      }
+
+      #sd-form-wrapper ul#sn-issue-origin-sec li:hover {
+        color: #fff;
+        background-color: #293e40;
+      }
+
+      #sd-form-wrapper ul#sn-issue-origin-sec li:last-child {
+        margin-right: 0;
+      }
+
+      #sd-form-wrapper ul#sn-issue-origin-sec li.selected {
+        color: #fff;
+        background-color: #293e40;
+      }
+
       #sd-form-wrapper #sd-form button {
         background-color: #fff;
         border: 2px solid #293e40;
@@ -555,13 +601,21 @@
             <option value="event agenda session">${SD_TXT.topicDropdown.eventAgendaSession}</option>
             <option value="event registration">${SD_TXT.topicDropdown.eventRegistration}</option>
             <option value="general question">${SD_TXT.topicDropdown.generalQuestion}</option>
-            <option value="others">${SD_TXT.topicDropdown.others}</option>
+           <!-- <option value="others">${SD_TXT.topicDropdown.others}</option> -->
           </select>
         </label>
-        <label>
+        <!-- <label>
           <input type="text" name="short_description" class="sd-form-field mandatory-field" />
           <span class="sd-form-label">${SD_TXT.subject}</span>
-        </label>
+        </label> -->
+        <h4>${SD_TXT.issueOriginTitle}</h4>
+        <ul id="sn-issue-origin-sec">
+          <li class="selected default">Main Site</li>
+          <li>Developer Portal</li>
+          <li>Partner Portal</li>
+          <li>Community Site</li>
+          <li>Somewhere Else</li>
+        </ul>
         <label>
           <textarea name="description" class="sd-form-field"></textarea>
           <span class="sd-form-label">${SD_TXT.description}</span>
@@ -621,14 +675,14 @@
     return 'https://www.google.com/recaptcha/api.js?render=explicit&hl=' + (langRecap ? langRecap : 'en-US');
   }
 
-  function sdRecaptchaScriptTag(){
+  function sdRecaptchaScriptTag() {
     var recaptchaScriptTag = document.createElement('script');
     recaptchaScriptTag.type = 'text/javascript';
     recaptchaScriptTag.src = sdRecaptchaSrc();
     return recaptchaScriptTag;
   }
 
-  function sdWidgetRender(id, callback, errCallback){
+  function sdWidgetRender(id, callback, errCallback) {
     return grecaptcha.render(id, {
       'sitekey': '6Lc4XHAUAAAAABSFGSTYQheacoJo5S5BgOyExoE7',
       'callback': callback,
@@ -639,11 +693,11 @@
 
   document.body.insertAdjacentHTML('beforeend', renderHTML());
 
-  if(!document.querySelector('script[src^="https://www.google.com/recaptcha/api.js"]')){
+  if (!document.querySelector('script[src^="https://www.google.com/recaptcha/api.js"]')) {
     // only execute this when there is no recaptcha script on the page yet
     document.head.append(sdRecaptchaScriptTag());
   }
- 
+
   const sdFormWrapper = document.getElementById('sd-form-wrapper');
   const requestForm = sdFormWrapper.querySelector('#sd-form');
   const uploadFileBtn = requestForm.querySelector('#sd-uploadFile');
@@ -656,7 +710,54 @@
   const sdRecaptchaEle = requestForm.querySelector('#sdRecaptcha');
   let closeOverlayCounter = null;
   let sdRecaptchaWidget = null;
+  let issueOriginSec = null;
+  let issueLocation = '';
 
+  const IssueOrigin = {
+    init() {
+      this.issueTiles = Array.from(document.querySelectorAll('#sd-form #sn-issue-origin-sec li'));
+      this.initActiveTile();
+      this.mountEvent();
+      return this;
+    },
+    mountEvent() {
+      //console.log('events mounted')
+      document.addEventListener('click', this.activateTile.bind(this));
+    },
+    initActiveTile() {
+      this.issueTiles.forEach(tile => {
+        // console.log('initial active');
+        if (tile.classList.contains('default')) {
+          tile.classList.add('selected');
+          this.activeTile = tile;
+          this.setlocVal(tile.innerText)
+          return;
+        };
+        tile.classList.remove('selected');
+      })
+    },
+    activateTile(e) {
+      const target = e.target;
+      // console.log('target===>', target);
+      if (!target.parentElement || target.parentElement.id !== 'sn-issue-origin-sec') return;
+
+      this.issueTiles.forEach(tile => {
+        // console.log('clicked');
+        // console.log('tile ===>', tile);
+        if (target === this.activeTile) {
+          return;
+        }
+        tile.classList.remove('selected');
+      })
+      target.classList.add('selected');
+      this.setlocVal(target.innerText);
+      this.activeTile = target;
+    },
+    setlocVal(value) {
+      issueLocation = value;
+    }
+
+  }
 
   function showErrorMessageSD(field, errorMsg) {
     field.parentElement.insertAdjacentHTML('beforeend', '<span class="sd-field-error-msg">' + errorMsg + '</span>');
@@ -686,6 +787,7 @@
 
       setTimeout(function () {
         sdFormWrapper.classList.remove('thank-you-shown');
+        issueOriginSec.initActiveTile();
       }, 250)
     }
   }
@@ -706,14 +808,14 @@
     if (e.target.classList.contains('sd-form-trigger')) {
       sdFormWrapper.classList.add('sd-form-active');
       // load recaptcha
-      if(!sdRecaptchaEle.classList.contains('sd-recaptcha-loaded')){
+      if (!sdRecaptchaEle.classList.contains('sd-recaptcha-loaded')) {
         sdRecaptchaWidget = sdWidgetRender('sdRecaptcha',
-        function success(e){
-          hideErrorMessageSD(sdRecaptchaEle)
-        }, 
-        function error(err){
-          showErrorMessageSD(sdRecaptchaEle, SD_TXT.required)
-        });
+          function success(e) {
+            hideErrorMessageSD(sdRecaptchaEle)
+          },
+          function error(err) {
+            showErrorMessageSD(sdRecaptchaEle, SD_TXT.required)
+          });
         // add the flag
         sdRecaptchaEle.classList.add('sd-recaptcha-loaded');
       }
@@ -749,6 +851,8 @@
     clearTimeout(closeOverlayCounter);
     closeOutSdOverlay(requiredFields);
   });
+
+  issueOriginSec = IssueOrigin.init();
 
   requestForm.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -805,7 +909,7 @@
               // hideErrorMessageSD(mockUploadFileBtn);
 
               totalFileSize += attachments[key].size;
-
+              console.log('1===>', field.name)
               data.append(field.name, attachments[key], attachments[key].name);
             }
           }
@@ -821,11 +925,17 @@
           hideErrorMessageSD(mockUploadFileBtn, SD_TXT.asssetType);
         }
       } else {
+        if(field.name){
+          console.log('2===>', field.name);
         // append other field values to the data object except file type
-        data.append(field.name, field.value);
+          data.append(field.name, field.value);
+        }
       }
     })
 
+    // auto generate the subject with combo of Location - Issue Type
+    data.append('short_description', `${issueLocation} - ${document.querySelector('#sd-form [name=subcategory]').selectedOptions[0].innerText}`);
+    console.log('data ====>', data);
     if (!validFields) {
       return;
     };
