@@ -14,6 +14,7 @@
     noFilesChosen: sdTranslator('noFilesChosen') || 'No Attachment Chosen',
     fileSizeExceeded: sdTranslator('Total file size must not exceed 15 MB') || 'Total file size must not exceed 15 MB',
     issueOriginTitle: sdTranslator('Where did you encounter the problem') || 'Where did you encounter the problem',
+    sdFormTitle: sdTranslator('Report an issue') || 'Report an issue',
     topicDropdown: {
       issueType: sdTranslator('Issue Type') || 'Issue Type',
       signIn: sdTranslator('Sign In') || 'Sign In',
@@ -84,7 +85,7 @@
         max-width: 600px;
         margin: auto;
         position: relative;
-        padding: 50px 30px;
+        padding: 40px 30px;
         top: 30px;
         z-index: 2;
       }
@@ -176,8 +177,24 @@
         margin-bottom: 8px;
         text-align: left;
       }
-
-      #sd-form-wrapper #sd-form #sd-uploadFile__attachment_label {
+      #sd-form-wrapper h2 {
+        font-family: "GilroySemiBold", -apple-system,
+          BlinkMacSystemFont,
+          Segoe UI,
+          Roboto,
+          Helvetica Neue,
+          Arial,
+          Noto Sans,
+          sans-serif,
+          Apple Color Emoji,
+          Segoe UI Emoji,
+          Segoe UI Symbol,
+          Noto Color Emoji;
+        font-size: 22px;
+        line-height: 1.37;
+        margin: 10px 0;
+      }
+      #sd-form-wrapper #sd-form h3 {
         font-family: "GilroyRegular", -apple-system,
           BlinkMacSystemFont,
           Segoe UI,
@@ -192,7 +209,12 @@
           Noto Color Emoji;
         font-size: 16px;
         font-weight: normal;
-        margin: 20px 0 0 0;
+        line-height: 1.37;
+        margin: 10px 0 5px 0;
+      }
+
+      #sd-uploadFile-mock-wrapper {
+        margin-top: 20px;
       }
 
       #sd-form-wrapper #sd-form label#sd-uploadFile-mock {
@@ -363,6 +385,7 @@
         display: flex;
         padding-left: 0;
         margin: 0 0 8px 0;
+        flex-wrap: wrap;
         font-family: "GilroyRegular", -apple-system,
           BlinkMacSystemFont,
           Segoe UI,
@@ -384,15 +407,27 @@
         cursor: pointer;
         list-style: none;
         text-align: center;
-        padding: 10px;
-        margin-right: 10px;
-        width: 20%;
+        padding: 10px 10px;
+        margin: 5px 0;
+        width: 100%;
         transition: all .25s;
+      }
+
+      #sd-form-wrapper ul#sn-issue-origin-sec li span {
+        display: block;
+        color: inherit;
+        position: relative;
+        transform: translate(0, -50%);
+        top: 50%;
       }
 
       #sd-form-wrapper ul#sn-issue-origin-sec li:hover {
         color: #fff;
         background-color: #293e40;
+      }
+
+      #sd-form-wrapper ul#sn-issue-origin-sec li:hover span {
+        color: inherit;
       }
 
       #sd-form-wrapper ul#sn-issue-origin-sec li:last-child {
@@ -426,9 +461,33 @@
         outline: none;
         padding: 15px 40px;
         position: relative;
-        transform: translateX(-50%);
+        left: 0;
         transition: .2s ease;
   
+      }
+
+      #sd-form-wrapper #sn-consent-container {
+        margin-top: 25px;
+      }
+      #sd-form-wrapper #sn-consent-container p {
+        font-family: "GilroyRegular", -apple-system,
+        BlinkMacSystemFont,
+        Segoe UI,
+        Roboto,
+        Helvetica Neue,
+        Arial,
+        Noto Sans,
+        sans-serif,
+        Apple Color Emoji,
+        Segoe UI Emoji,
+        Segoe UI Symbol,
+        Noto Color Emoji;
+        font-size: 14px;
+      }
+
+      #sd-form-wrapper #sn-consent-container p a {
+        font-family: inherit;
+        font-size: inherit;
       }
   
       #sd-form-wrapper #sd-form button:hover {
@@ -559,7 +618,7 @@
       
       @media (min-width: 768px) {
         #sd-form-wrapper #sd-form-section {
-          padding: 60px 50px;
+          padding: 45px 50px;
           top: 50px;
         }
         #sd-form-wrapper #sd-form label .sd-form-label {
@@ -572,6 +631,16 @@
         #sd-form-wrapper #sd-thank-you p {
           font-size: 18px;
         }
+
+        #sd-form-wrapper ul#sn-issue-origin-sec {
+          flex-wrap: nowrap;
+        }
+
+        #sd-form-wrapper ul#sn-issue-origin-sec li {
+          padding: 15px 10px;
+          margin-right: 10px;
+          width: 20%;
+        }
       }
       @media (min-width: 1024px) {
         #sd-form-wrapper #sd-form label .sd-form-field {
@@ -581,6 +650,7 @@
     </style>
     <section id="sd-form-section">
       <form action="${actionPath}" id="sd-form">
+        <h2 id="sd-form-title">${SD_TXT.sdFormTitle}</h2>
         <input type="hidden" name="caller_id" class="sd-form-field" value="Guest" />
         <input type="hidden" name="contact_type" class="sd-form-field" value="form" />
         <input type="hidden" name="u_source_url" class="sd-form-field" value="${window.location.href}" />
@@ -608,13 +678,13 @@
           <input type="text" name="short_description" class="sd-form-field mandatory-field" />
           <span class="sd-form-label">${SD_TXT.subject}</span>
         </label> -->
-        <h4>${SD_TXT.issueOriginTitle}</h4>
+        <h3>${SD_TXT.issueOriginTitle}?</h3>
         <ul id="sn-issue-origin-sec">
-          <li class="selected default">Main Site</li>
-          <li>Developer Portal</li>
-          <li>Partner Portal</li>
-          <li>Community Site</li>
-          <li>Somewhere Else</li>
+          <li class="selected default"><span>Main Site</span></li>
+          <li><span>Developer Portal</span></li>
+          <li><span>Partner Portal</span></li>
+          <li><span>Community Site</span></li>
+          <li><span>Somewhere Else</span></li>
         </ul>
         <label>
           <textarea name="description" class="sd-form-field"></textarea>
@@ -636,9 +706,11 @@
         <section id="sd-recaptcha-container">
           <div id="sdRecaptcha" class="g-recaptcha sd-form-field" data-sitekey="6Lc4XHAUAAAAABSFGSTYQheacoJo5S5BgOyExoE7"></div>
         </section>
-
         <span id="sd-res-error"></span>
         <button type="submit" value="submit">${SD_TXT.submit}</button>
+        <section id="sn-consent-container">
+          <p>By submitting this form, I confirm that I have read and agree to the <a href="https://www.servicenow.com/privacy-statement.html" target="_blank">Privacy Statement</a>.</p>
+        </section>
       </form>
       <div id="sd-thank-you">
         <p>${SD_TXT.submissionThankYou}</p>
@@ -737,20 +809,23 @@
       })
     },
     activateTile(e) {
-      const target = e.target;
+      let target = e.target;
+      let targetInnerText = target.innerText;
       // console.log('target===>', target);
+      if(target.nodeName.toLowerCase() === 'span'){
+        target = target.parentElement;
+      }
+
       if (!target.parentElement || target.parentElement.id !== 'sn-issue-origin-sec') return;
 
       this.issueTiles.forEach(tile => {
-        // console.log('clicked');
-        // console.log('tile ===>', tile);
         if (target === this.activeTile) {
           return;
         }
         tile.classList.remove('selected');
       })
       target.classList.add('selected');
-      this.setlocVal(target.innerText);
+      this.setlocVal(targetInnerText);
       this.activeTile = target;
     },
     setlocVal(value) {
@@ -909,7 +984,7 @@
               // hideErrorMessageSD(mockUploadFileBtn);
 
               totalFileSize += attachments[key].size;
-              console.log('1===>', field.name)
+              // console.log('1===>', field.name)
               data.append(field.name, attachments[key], attachments[key].name);
             }
           }
@@ -926,7 +1001,7 @@
         }
       } else {
         if(field.name){
-          console.log('2===>', field.name);
+          // console.log('2===>', field.name);
         // append other field values to the data object except file type
           data.append(field.name, field.value);
         }
@@ -935,7 +1010,7 @@
 
     // auto generate the subject with combo of Location - Issue Type
     data.append('short_description', `${issueLocation} - ${document.querySelector('#sd-form [name=subcategory]').selectedOptions[0].innerText}`);
-    console.log('data ====>', data);
+    // console.log('data ====>', data);
     if (!validFields) {
       return;
     };
