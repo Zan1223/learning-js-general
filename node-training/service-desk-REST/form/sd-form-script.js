@@ -802,7 +802,7 @@
         if (tile.classList.contains('default')) {
           tile.classList.add('selected');
           this.activeTile = tile;
-          this.setlocVal(tile.innerText)
+          this.setlocVal(tile.firstChild.textContent)
           return;
         };
         tile.classList.remove('selected');
