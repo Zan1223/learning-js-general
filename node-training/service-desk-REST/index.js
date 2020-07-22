@@ -15,6 +15,7 @@ const END_POINTS = {
   devEnv: '/service_desk_form',
   formDevEnvPath: './form/dev-env.html',
   formScript: './form/sd-form-script.js',
+  formScriptInpage: './form/sd-form-script-inpage.js',
 }
 
 const FILE_SIZE_LIMIT = 15000000;
@@ -241,6 +242,19 @@ http.createServer(options, function (req, res) {
     return;
   }
 
+  /* for local testing only start 1 */
+  if (req.url ==  '/iframe-page.html' && req.method.toLowerCase() == 'get') {
+    res.writeHead(200,
+      resHeaderCompiler('text/html', requestHeaders, false)
+    );
+    //res.end(fs.createReadStream('./form.html'));
+    // render the form html
+    fs.createReadStream('./form/iframe-page.html').pipe(res);
+
+    return;
+  }
+  /* for local testing only end 1 */
+
   // if requesting for the form script
   if (req.url == '/sd-form-script.js' && req.method.toLowerCase() == 'get') {
     res.writeHead(200,
@@ -252,6 +266,19 @@ http.createServer(options, function (req, res) {
 
     return;
   }
+
+  /* for local testing only start 2 */
+  if (req.url == '/sd-form-script-inpage.js' && req.method.toLowerCase() == 'get') {
+    res.writeHead(200,
+      resHeaderCompiler('text/javascript', requestHeaders, false)
+    );
+
+    // render the form html
+    fs.createReadStream(END_POINTS.formScriptInpage).pipe(res);
+
+    return;
+  }
+  /* for local testing only start 2 */
 
   // else return 400 bad request
   res.writeHead(404,
