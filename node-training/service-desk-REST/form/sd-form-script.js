@@ -52,7 +52,7 @@
         height: 100vh;
         width: 100%;
         opacity: 0;
-        position: absolute;
+        position: fixed;
         transition: all 0.2s ease;
         top: 0;
         right: 0;
