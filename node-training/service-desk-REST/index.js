@@ -22,7 +22,7 @@ const FILE_SIZE_LIMIT = 15000000;
 
 const AUTH = `Basic ${Buffer.from('martech.servicedesk'+':'+'Test@123').toString('base64')}`;
 
-const ORIGIN_ALLOWED = ['https://www.servicenow.com', 'https://stage-www.servicenow.com', 'https://qa-www.servicenow.com', 'https://knowledge.servicenow.com', 'https://stage-knowledge.servicenow.com'];
+const ORIGIN_ALLOWED = ['https://www.servicenow.com', 'https://stage-www.servicenow.com', 'https://qa-www.servicenow.com', 'https://knowledge.servicenow.com', 'https://stage-knowledge.servicenow.com', 'https://www.webdev.servicenow.com', 'https://www.webqa.servicenow.com', 'https://www.webstg.servicenow.com'];
 
 function constructArr(a) {
   if (!a) return null;
