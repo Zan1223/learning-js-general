@@ -778,6 +778,7 @@
   const formCloseBtn = document.querySelector('#sd-form-section #sd-overlay-close');
   const formShadowDrop = sdFormWrapper.querySelector('#sd-drop-shadow');
   const sdRecaptchaEle = requestForm.querySelector('#sdRecaptcha');
+  const faqPageUrl = '/support/faq-other.html';
   let closeOverlayCounter = null;
   let sdRecaptchaWidget = null;
   let issueOriginSec = null;
@@ -810,11 +811,17 @@
       let target = e.target;
       let targetInnerText = target.innerText;
       // console.log('target===>', target);
-      if(target.nodeName.toLowerCase() === 'span'){
+      if (target.nodeName.toLowerCase() === 'span') {
         target = target.parentElement;
       }
 
       if (!target.parentElement || target.parentElement.id !== 'sn-issue-origin-sec') return;
+
+      // all properties other than 'Main Site' would be redirected to the FAQ page
+      if (target !== target.parentElement.firstElementChild) {
+        window.open(window.origin + faqPageUrl)
+        return;
+      }
 
       this.issueTiles.forEach(tile => {
         if (target === this.activeTile) {
@@ -878,7 +885,7 @@
   });
 
 
- const showSDOverlay = function(e) {
+  const showSDOverlay = function (e) {
     if ((e.type === "click" && e.target.classList.contains('sd-form-trigger')) || (e.type === 'message' && e.data === 'xxxenableSDOverlay')) {
       sdFormWrapper.classList.add('sd-form-active');
       // load recaptcha
@@ -1002,9 +1009,9 @@
           hideErrorMessageSD(mockUploadFileBtn, SD_TXT.asssetType);
         }
       } else {
-        if(field.name){
+        if (field.name) {
           // console.log('2===>', field.name);
-        // append other field values to the data object except file type
+          // append other field values to the data object except file type
           data.append(field.name, field.value);
         }
       }
