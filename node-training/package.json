@@ -13,7 +13,7 @@
   "author": "zan1223",
   "license": "MIT",
   "dependencies": {
-    "bl": "^3.0.0",
+    "bl": "^3.0.1",
     "element-qsa-scope": "^1.1.0",
     "https": "^1.0.0",
     "koa": "^2.7.0",
