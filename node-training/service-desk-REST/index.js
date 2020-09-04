@@ -22,7 +22,58 @@ const FILE_SIZE_LIMIT = 15000000;
 
 const AUTH = `Basic ${Buffer.from('martech.servicedesk'+':'+'Test@123').toString('base64')}`;
 
-const ORIGIN_ALLOWED = ['https://www.servicenow.com', 'https://stage-www.servicenow.com', 'https://qa-www.servicenow.com', 'https://knowledge.servicenow.com', 'https://stage-knowledge.servicenow.com', 'https://www.webdev.servicenow.com', 'https://www.webqa.servicenow.com', 'https://www.webstg.servicenow.com'];
+const ORIGIN_ALLOWED = ['https://www.servicenow.com',
+    'https://www.servicenow.au',
+    'https://www.servicenow.nz',
+    'https://www.servicenow.sg',
+    'https://www.servicenow.ind.in',
+    'https://www.servicenow.co.uk',
+    'https://www.servicenow.nl',
+    'https://www.servicenow.fr',
+    'https://www.servicenow.de',
+    'https://www.servicenow.co.it',
+    'https://www.servicenow.co.jp',
+    'https://www.servicenow.es',
+    'https://www.servicenow.kr',
+    'https://www.servicenow.com.br',
+
+    'https://stage-www.servicenow.com',
+    'https://stage-www.servicenow.au',
+    'https://stage-www.servicenow.nz',
+    'https://stage-www.servicenow.sg',
+    'https://stage-www.servicenow.ind.in',
+    'https://stage-www.servicenow.co.uk',
+    'https://stage-www.servicenow.nl',
+    'https://stage-www.servicenow.fr',
+    'https://stage-www.servicenow.de',
+    'https://stage-www.servicenow.co.it',
+    'https://stage-www.servicenow.co.jp',
+    'https://stage-www.servicenow.es',
+    'https://stage-www.servicenow.kr',
+    'https://stage-www.servicenow.com.br',
+
+    'https://www.webstg.servicenow.com',
+    'https://www.webstg.servicenow.au',
+    'https://www.webstg.servicenow.nz',
+    'https://www.webstg.servicenow.sg',
+    'https://www.webstg.servicenow.ind.in',
+    'https://www.webstg.servicenow.co.uk',
+    'https://www.webstg.servicenow.nl',
+    'https://www.webstg.servicenow.fr',
+    'https://www.webstg.servicenow.de',
+    'https://www.webstg.servicenow.co.it',
+    'https://www.webstg.servicenow.co.jp',
+    'https://www.webstg.servicenow.es',
+    'https://www.webstg.servicenow.kr',
+    'https://www.webstg.servicenow.com.br',
+
+    'https://knowledge.servicenow.com',
+    'https://stage-knowledge.servicenow.com',
+    'https://qa-www.servicenow.com',
+    'https://dev-www.servicenow.com',
+    'https://www.webdev.servicenow.com',
+    'https://www.webqa.servicenow.com'
+  ];
 
 function constructArr(a) {
   if (!a) return null;
