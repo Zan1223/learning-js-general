@@ -24,7 +24,7 @@
     "webpack-deep-scope-plugin": "^1.6.0",
     "webpack-dev-server": "^3.6.0",
     "webpack-merge": "^4.2.1",
-    "yargs-parser": "^13.1.0"
+    "yargs-parser": "^13.1.2"
   },
   "dependencies": {
     "lodash-es": "^4.17.11"
