@@ -1,0 +1,219 @@
+{
+    "productList": [
+      {
+        "id": "25148",
+        "label": "IT Service Management",
+        "abbr": "ITSM",
+        "campId": "24972",
+        "campName": "WS-ValueCalculatorITSM-02APR20-Global",
+        "isChecked": false
+      },
+      {
+        "id": "25155",
+        "label": "IT Operational Management",
+        "abbr": "ITOM",
+        "campId": "24973",
+        "campName": "WS-ValueCalculatorITOM-02APR20-Global",
+        "isChecked": false
+      },
+      {
+        "id": "25150",
+        "label": "IT Business Management",
+        "abbr": "ITBM",
+        "campId": "24974",
+        "campName": "WS-ValueCalculatorITBM-02APR20-Global",
+        "isChecked": false
+      },
+      {
+        "id": "25152",
+        "label": "Human Resources",
+        "abbr": "HR",
+        "campId": "24976",
+        "campName": "WS-ValueCalculatorHR-02APR20-Global",
+        "isChecked": false
+      },
+      {
+        "id": "25151",
+        "label": "Customer Service Management",
+        "abbr": "CSM",
+        "campId": "24977",
+        "campName": "WS-ValueCalculatorCSM-02APR20-Global",
+        "isChecked": false
+      },
+      {
+        "id": "25154",
+        "label": "Governance, Risk, and Compliance",
+        "abbr": "GRC",
+        "campId": "24979",
+        "campName": "WS-ValueCalculatorGRC-02APR20-Global",
+        "isChecked": false
+      },
+      {
+        "id": "25153",
+        "label": "Security Operations",
+        "abbr": "SecOps",
+        "campId": "24978",
+        "campName": "WS-ValueCalculatorSecOps-02APR20-Global",
+        "isChecked": false
+      },
+      {
+        "id": "25149",
+        "label": "Software Asset Management",
+        "abbr": "SAM",
+        "campId": "24975",
+        "campName": "WS-ValueCalculatorSAM-02APR20-Global",
+        "isChecked": false
+      }
+    ],
+    "currencyList": [
+      {
+        "id": 144,
+        "acronym": "USD",
+        "name": "US Dollar",
+        "symbol": "$"
+      },
+      {
+        "id": 2,
+        "acronym": "AED",
+        "name": "United Arab Emirates Dirham",
+        "symbol": " د.إ"
+      },
+      {
+        "id": 5,
+        "acronym": "ANG",
+        "name": "Netherlands Antillian Guilder",
+        "symbol": "ƒ"
+      },
+      {
+        "id": 7,
+        "acronym": "ARS",
+        "name": "Argentine Peso",
+        "symbol": "$"
+      },
+      {
+        "id": 9,
+        "acronym": "AUD",
+        "name": "Australian Dollar",
+        "symbol": "$"
+      },
+      {
+        "id": 14,
+        "acronym": "BGN",
+        "name": "Bulgarian Lev",
+        "symbol": "Лв."
+      },
+      {
+        "id": 15,
+        "acronym": "BHD",
+        "name": "Bahraini Dinar",
+        "symbol": ".د.ب"
+      },
+      {
+        "id": 18,
+        "acronym": "BND",
+        "name": "Brunei Dollar",
+        "symbol": "B$"
+      },
+      {
+        "id": 52,
+        "acronym": "GBP",
+        "name": "British Pound",
+        "symbol": "£"
+      },
+      {
+        "id": 47,
+        "acronym": "EUR",
+        "name": "Euro",
+        "symbol": "€"
+      }
+    ],
+    "DecisionLinkAPIs": {
+      "headers": {
+        "Content-Type": "application/json",
+        "public_key": "fedda1bc36ad89994fb947198eab4722",
+        "cache-control": "no-cache"
+      },
+      "host": "https://servicenowservices-test.value-cloud.com",
+      "paths": {
+        "getSessionHash": "/valueProps/calculatorcreateValueProp",
+        "getQuestions": "/valueProps/calculatorAvailableScalers",
+        "getNumbers": "/valueProps/calculatorScaler/create",
+        "downloadPPT": "/valueProps/reassignCalculatorValueProp"
+      }
+    },
+    "defaultChartData": {
+      "totalValue": "_,___",
+      "valueBreakdowns": [
+        {
+          "innerTopText": "IT Productivity Increase",
+          "innerBottText": "In Savings",
+          "label": "IT Productivity Increase",
+          "value": 40,
+          "dollarValue": "_,___",
+          "percent": "__%"
+        },
+        {
+          "innerTopText": "Faster Support Resolution",
+          "innerBottText": "In Savings",
+          "label": "Faster Support Resolution",
+          "value": 25,
+          "dollarValue": "_,___",
+          "percent": "__%"
+        },
+        {
+          "innerTopText": "Fully Automated Services",
+          "innerBottText": "In Savings",
+          "label": "Fully Automated Services",
+          "value": 20,
+          "dollarValue": "_,___",
+          "percent": "__%"
+        },
+        {
+          "innerTopText": "Fewer Major Outages",
+          "innerBottText": "In Savings",
+          "label": "Fewer Major Outages",
+          "value": 10,
+          "dollarValue": "_,___",
+          "percent": "__%"
+        },
+        {
+          "innerTopText": "Lower Development Costs",
+          "innerBottText": "In Savings",
+          "label": "Lower Development Costs",
+          "value": 5,
+          "dollarValue": "_,___",
+          "percent": "__%"
+        }
+      ]
+    },
+    "content": {
+      "checkBoxPanel": {
+        "selectBUText": "Select business areas to calculate value for.",
+        "selectCurrencyText": "Select your currency",
+        "ctaText": "Next",
+        "defaultCurrency": 144,
+        "defaultCurrSymbol": "$",
+        "multiSelectCampSetting": {
+          "label": "IT Service Management",
+          "campId": "24981",
+          "campName": "WS-ValueCalculatorMultipleSolutions-02APR20-Global"
+        }
+      },
+      "scalerPanel": {
+        "ctaText1": "Back",
+        "warning": "(entered values may return to default)",
+        "scalerAreaText": "Values below have been defaulted. Update sliders to customize.",
+        "ctaText2": "Calculate",
+        "ctaText3": "Reset"
+      },
+      "visualPanel": {
+        "totalValueText": "Your total expected annual value",
+        "chartInnerBottomText": "In Savings",
+        "chartLegendTitle": "Savings breakdown:",
+        "chartFootnoteBold": "Forrester Certified.",
+        "chartFootnoteRegular": "All figures calculated are based on metrics collected from ServiceNow customers as part of Forrester Total Economic Impact studies and additive customer interviews conducted in the first three months of 2020, as a commissioned validation on behalf of ServiceNow.",
+        "ctaText": "Download business value brief",
+        "ctaLink": "/success/value-calculator-form.html"
+      }
+    }
+  }

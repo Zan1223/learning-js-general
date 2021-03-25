@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <a href="#" class="sd-form-trigger">click to trigger iframe page</a>
+  <script>
+    window.addEventListener('click', function(e){
+      if(e.target.classList.contains('sd-form-trigger')){
+        console.log('iframe clicked');
+        window.parent.postMessage('xxxenableSDOverlay', '*');
+      }
+    })
+  </script>
+</body>
+</html>
