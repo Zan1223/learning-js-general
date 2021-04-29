@@ -1,9 +1,10 @@
 import _ from 'lodash';
 import printMe from './print';
+import something from './something';
 import './style.scss';
-import mountainImage from './mountain.png';
 
-function component() {
+
+export default function indexComp() {
   const element = document.createElement('div');
   const btn = document.createElement('button');
 
@@ -13,13 +14,9 @@ function component() {
 
   btn.innerHTML = 'Click me and check the console!';
   btn.onclick = printMe;
-
-  // const myImage = new Image();
-  // myImage.src = mountainImage;
+  console.log(something());
 
   element.appendChild(btn);
 
   return element;
 }
-
-document.body.appendChild(component());
