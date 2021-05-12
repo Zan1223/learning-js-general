@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "https": "^1.0.0",
-    "nodemailer": "^6.4.6",
+    "nodemailer": "^6.4.16",
     "url": "^0.11.0"
   }
 }
